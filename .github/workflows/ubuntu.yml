@@ -27,6 +27,32 @@ jobs:
           git branch -a
           git submodule update --init --recursive            
 
-      - name: Run a one-line script
-        run: ls -al
+      - name: build python module
+        run: |
+            pyenv versions
+            pyenv install 3.7.1 -s
+            pyenv global 3.7.1
+            python3 --version  
+
+            cd src_pybind/core
+            mkdir buildMake
+            cd buildMake
+            cmake ..
+            make    
+            cd ../../../
+
+            cd src_pybind/gl
+            mkdir buildMake
+            cd buildMake
+            cmake ..
+            make    
+            cd ../../../
+
+            pip3 install --upgrade pip setuptools
+            pip3 install -e .  
+
+      - name: test python module
+        run: |
+            pip3 install pytest
+            pytest -v -s --is_gl=false --ignore=test_py/test_pyqt.py
 
