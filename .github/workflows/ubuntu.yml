@@ -63,5 +63,4 @@ jobs:
         run: |
           python3 -m pip uninstall torch_delfem2 -y
           python3 -m pip install torch
-          cd src_pybind/torch
-          python3 setup.py develop
+          python3 -m pip install -e src_pybind/torch
