@@ -53,5 +53,5 @@ jobs:
       - name: test python module
         run: |
             pip3 install pytest
-            pytest -v -s --is_gl=false --ignore=test_py/test_pyqt.py
+            python3 -m pytest -v -s --is_gl=false --ignore=test_py/test_pyqt.py
 
