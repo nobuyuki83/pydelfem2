@@ -29,9 +29,6 @@ jobs:
 
       - name: build python module
         run: |
-            pyenv versions
-            pyenv install 3.7.1 -s
-            pyenv global 3.7.1
             python3 --version  
 
             cd src_pybind/core
