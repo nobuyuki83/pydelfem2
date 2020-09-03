@@ -47,11 +47,12 @@ jobs:
             make    
             cd ../../../
 
-            pip3 install --upgrade pip setuptools
-            pip3 install -e .  
+            python3 -m pip install --upgrade pip setuptools
+            python3 -m pip install -e .  
 
       - name: test python module
         run: |
-            pip3 install pytest
+            apt-get install python3-opengl
+            python3 -m pip install pytest
             python3 -m pytest -v -s --is_gl=false --ignore=test_py/test_pyqt.py
 
