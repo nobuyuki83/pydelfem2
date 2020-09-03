@@ -54,5 +54,8 @@ jobs:
         run: |
             sudo apt-get install python3-opengl
             python3 -m pip install pytest
+            python3 -m pip install PyOpenGL
+            python3 -m pip install glfw
+            python3 -m pip install PySide2
             python3 -m pytest -v -s --is_gl=false --ignore=test_py/test_pyqt.py
 
