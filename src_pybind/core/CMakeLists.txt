@@ -26,7 +26,7 @@ project(${PROJ_NAME})
 set(DELFEM2_INCLUDE_DIR "../../delfem2/include")
 set(DELFEM2_INC         "../../delfem2/include/delfem2")
 set(PYBIND11_DIR        "../../pybind11")
-add_subdirectory(${PYBIND11_DIR} pybind11)
+add_subdirectory(${PYBIND11_DIR})
 
 ########################
 
