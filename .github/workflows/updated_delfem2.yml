@@ -1,0 +1,19 @@
+
+
+name: Updated_DelFEM2
+
+on: repository_dispatch
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout PyDelFEM2 repository
+      uses: actions/checkout@v2
+      
+    - name: update DelFEM2
+      run: |
+        ls -al
+        cd delfem2
+
