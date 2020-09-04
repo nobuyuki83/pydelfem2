@@ -28,12 +28,11 @@ project(${PROJ_NAME})
 
 set(DELFEM2_INCLUDE_DIR "../../delfem2/include")
 set(DELFEM2_INC         "../../delfem2/include/delfem2")
-set(3RD_PARTY           "../../delfem2/3rd_party")
 
-set(GLAD_INCLUDE_DIR "${3RD_PARTY}/glad3/include")
-get_filename_component(GLAD_INCLUDE_DIR ${GLAD_INCLUDE_DIR} ABSOLUTE)
+set(GLAD_DIR "../../delfem2/3rd_party/glad3")
+get_filename_component(GLAD_DIR ${GLAD_DIR} ABSOLUTE)
 
-set(PYBIND11_DIR ${3RD_PARTY}/pybind11)
+set(PYBIND11_DIR ../../pybind11)
 add_subdirectory(${PYBIND11_DIR} pybind11)
 
 if(NOT USE_HEADERONLY)
@@ -69,7 +68,8 @@ else()
 endif()
 
 set(INPUT_SRC
-    ${3RD_PARTY}/glad3/include/glad/glad.h     ${3RD_PARTY}/glad3/src/glad.c
+    ${GLAD_DIR}/include/glad/glad.h     
+    ${GLAD_DIR}/src/glad.c
 
     ${SRC_DFM2}
 
@@ -83,7 +83,7 @@ find_package(OpenGL REQUIRED)
 
 set(INPUT_INCLUDE_DIR
   ${OPENGL_INCLUDE_DIR}
-  ${GLAD_INCLUDE_DIR}  
+  ${GLAD_DIR}/include
   ${DELFEM2_INCLUDE_DIR}
 )
 set(INPUT_LIBRARY
@@ -92,8 +92,8 @@ set(INPUT_LIBRARY
 
 include_directories(
   ${INPUT_INCLUDE_DIR}
-  ${3RD_PARTY}/glad3/include
-  ${3RD_PARTY}/pybind11/include)
+  ${GLAD_DIR}/include
+  ../../pybind11/include)
 pybind11_add_module(${PROJ_NAME}
   ${INPUT_SRC} )
 

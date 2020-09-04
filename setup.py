@@ -107,7 +107,7 @@ setup(name='PyDelFEM2',
       packages=['PyDelFEM2','PyDelFEM2.gl','PyDelFEM2.qt'],      
       ext_modules=[ CMakeExtension('c_core', 'src_pybind/core', 'PyDelFEM2'),
                     CMakeExtension('c_gl',   'src_pybind/gl',   'PyDelFEM2/gl'),
-                    ],  # location of *.so file, cmake file
+                    ],  # name of *.so file, cmake file, distination of *.so file
       cmdclass=dict(build_ext=CMakeBuild),
       setup_requires=['pytest-runner'],
       tests_require=['pytest', 'PyOpenGL', 'glfw', 'PySide2' ],

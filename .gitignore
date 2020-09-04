@@ -1,0 +1,13 @@
+.eggs/
+.idea
+PyDelFEM2.egg-info/
+PyDelFEM2/__pycache__/
+PyDelFEM2/c_core.cpython-37m-darwin.so
+PyDelFEM2/gl/__pycache__/
+PyDelFEM2/gl/c_gl.cpython-37m-darwin.so
+PyDelFEM2/qt/__pycache__/
+build/
+myenv/
+src_pybind/core/buildMake/
+src_pybind/gl/buildMake/
+test_py/__pycache__/
