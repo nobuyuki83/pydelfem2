@@ -1,5 +1,7 @@
-# pydelfem2
+# PyDelFEM2
 A python binding of DelFEM2
+
+<a href="http://doge.mit-license.org"><img src="http://img.shields.io/:license-mit-blue.svg"></a> 
 
 | Ubuntu | 
 | --- |
