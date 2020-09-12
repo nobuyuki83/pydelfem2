@@ -8,12 +8,11 @@
 import OpenGL.GL as gl
 import numpy
 
-from ..cadmsh import Mesh
+from ..cadmsh import Mesh, MeshColor
 
 from ..c_core import CppMeshDynTri2D, CppMeshDynTri3D, CppCad2D
 from ..c_core import TRI, QUAD, LINE
 from ..c_core import CppSDF3, CppSDF3_Sphere
-#from ..c_core import RigidBodyAssembly_Static
 from ..c_core import \
   write_vtk_meshpoint, \
   write_vtk_meshelem, \
@@ -24,7 +23,7 @@ from .c_gl import CppGPUSampler, depth_buffer, color_buffer_4float
 from .c_gl import ColorMap
 from .c_gl import get_texture, setSomeLighting, setup_glsl
 from .c_gl import cppDrawEdge_CppMeshDynTri2D, cppDrawEdge_CppMeshDynTri3D, cppDraw_CppCad2D
-from .c_gl import draw_mesh_facenorm, draw_mesh_edge
+from .c_gl import draw_mesh_facenorm, draw_mesh_edge, draw_mesh_facecolor
 from .c_gl import cppDrawSphere
 from .c_gl import drawField_colorMap, drawField_disp, drawField_hedgehog
 
@@ -195,6 +194,15 @@ def draw_Mesh(self):
     gl.glColor3d(0,0,0)
     draw_mesh_edge(self.np_pos,self.np_elm, self.elem_type)
 
+def draw_MeshColor(self):
+  gl.glDisable(gl.GL_LIGHTING)
+  draw_mesh_facecolor(self.np_pos, self.np_elm, self.elem_type, self.np_color)
+  if self.is_draw_edge:
+    gl.glDisable(gl.GL_LIGHTING)
+    gl.glLineWidth(1)
+    gl.glColor3d(0,0,0)
+    draw_mesh_edge(self.np_pos,self.np_elm, self.elem_type)
+
 
 def vbo_array(aXY:numpy.ndarray) -> int:
   assert aXY.dtype == numpy.float64
@@ -244,6 +252,7 @@ setattr(Mesh,"draw",draw_Mesh)
 setattr(Mesh,"is_draw_edge",True)
 setattr(Mesh,"is_draw_face",True)
 setattr(Mesh,"color_face", [0.8, 0.8, 0.8, 1.0])
+setattr(MeshColor,"draw",draw_MeshColor)
 
 setattr(CppMeshDynTri2D,"draw",draw_CppMeshDynTri2D)
 setattr(CppMeshDynTri3D,"draw",draw_CppMeshDynTri3D)

@@ -32,7 +32,8 @@ from .fem import \
   FEM_FluidNavierStorks
 
 from .cadmsh import SDF
-from .cadmsh import Cad2D, VoxelGrid, Mesh, CadMesh2D, MeshDynTri2D, Mesher_Cad2D
+from .cadmsh import Cad2D, VoxelGrid, CadMesh2D, MeshDynTri2D, Mesher_Cad2D
+from .cadmsh import Mesh, MeshColor
 from .cadmsh import TET, TRI, HEX, QUAD, LINE
 from .cadmsh import CAD_EDGE_GEOM_BEZIER_CUBIC, CAD_EDGE_GEOM_LINE, CAD_EDGE_GEOM_BEZIER_QUADRATIC
 from .cadmsh import Collider_PointsToMeshTri3D

@@ -192,6 +192,25 @@ class Mesh():
 
 ###########################################################################
 
+
+class MeshColor(Mesh):
+  """ static mesh with RGB color
+  
+  """
+  def __init__(self,
+    np_pos=numpy.ndarray((0,3),dtype=numpy.float64),
+    np_elm=numpy.ndarray((0,3),dtype=numpy.uint32),
+    elem_type=TRI,
+    np_color=numpy.ndarray((0,3),dtype=numpy.float64)):
+    super(MeshColor, self).__init__(np_pos,np_elm,elem_type)
+    self.np_color = np_color
+
+
+
+
+
+###########################################################################
+
 class SDF():
   def __init__(self):
     self.list_sdf = []

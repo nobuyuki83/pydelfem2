@@ -65,6 +65,29 @@ void PyDrawMesh_FaceNorm
   }
 }
 
+
+void PyDrawMesh_FaceColor(
+    const py::array_t<double>& pos,
+    const py::array_t<unsigned int>& elm,
+    const dfm2::MESHELEM_TYPE type,
+    const py::array_t<double>& color)
+{
+  assert(pos.ndim()==2);
+  assert(elm.ndim()==2);
+  assert(color.ndim()==2);
+  assert(pos.shape()[0]==color.shape()[0]);
+  const auto shape_pos = pos.shape();
+  const auto shape_elm = elm.shape();
+  if( shape_pos[1] == 2 ){ // 2D Mesh
+    if( type == dfm2::MESHELEM_TRI  ){  dfm2::opengl::DrawMeshTri2D_FaceColor(
+        elm.data(),
+        shape_elm[0],
+        pos.data(),
+        shape_pos[0],
+        color.data()); }
+  }
+}
+
 void PyDrawMesh_Edge
 (const py::array_t<double>& pos,
  const py::array_t<unsigned int>& elm,
@@ -100,7 +123,7 @@ void DrawField_ColorMap
   const int ndim = pos.shape()[1];
   const int nelm = elm.shape()[0];
   assert( val.shape()[0] == np);
-  const int nstride = val.strides()[0] / sizeof(double);
+  const unsigned int nstride = val.strides()[0] / sizeof(double);
   if( elm.shape()[1] == 3 ){
     if( ndim == 3 ){
       dfm2::opengl::DrawMeshTri3D_ScalarP1(pos.data(), np,
@@ -137,7 +160,7 @@ void DrawField_Disp
   const int nelm = elm.shape()[0];
   assert( disp.shape()[0] == np );
   assert( disp.shape()[1] == ndim );
-  const int nstride = disp.strides()[0] / sizeof(double);
+  const unsigned int nstride = disp.strides()[0] / sizeof(double);
   if( ndim == 3 ){
     if( meshelem_type == dfm2::MESHELEM_TET ){
       dfm2::opengl::DrawMeshTet3D_FaceNormDisp(pos.data(), np,
@@ -164,7 +187,7 @@ void DrawField_Hedgehog
   const int ndim = pos.shape()[1];
   assert( disp.shape()[0] == np );
   assert( disp.shape()[1] == ndim );
-  const int nstride = disp.strides()[0] / sizeof(double);
+  const unsigned int nstride = disp.strides()[0] / sizeof(double);
   if( ndim == 3 ){
   }
   else if( ndim == 2 ){
@@ -202,7 +225,8 @@ PYBIND11_MODULE(c_gl, m) {
   
   m.def("draw_mesh_facenorm",  &PyDrawMesh_FaceNorm);
   m.def("draw_mesh_edge",      &PyDrawMesh_Edge);
-  
+  m.def("draw_mesh_facecolor", &PyDrawMesh_FaceColor);
+
   m.def("drawField_colorMap",   &DrawField_ColorMap);
   m.def("drawField_disp",       &DrawField_Disp);
   m.def("drawField_hedgehog",   &DrawField_Hedgehog);
