@@ -5,10 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <cstdio>
 #include <vector>
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 
 #include "delfem2/mshtopoio.h"

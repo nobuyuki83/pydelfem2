@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
 
-option(USE_HEADERONLY "USE_DFM2_HEADERONLY" OFF)
-
 #########################################################
 
 enable_language(CXX)
@@ -28,6 +26,8 @@ set(DELFEM2_INC         "../../delfem2/include/delfem2")
 set(PYBIND11_DIR        "../../pybind11")
 add_subdirectory(${PYBIND11_DIR} pybind11)
 
+add_definitions(-DDFM2_HEADER_ONLY=ON)
+
 ########################
 
 include_directories(
@@ -35,52 +35,10 @@ include_directories(
   ../../delfem2/3rd_party
 )
 
-if(NOT USE_HEADERONLY)
-  set(SRC_DFM2
-      ${DELFEM2_INC}/vec2.h               ${DELFEM2_INC}/vec2.cpp
-      ${DELFEM2_INC}/vec3.h               ${DELFEM2_INC}/vec3.cpp
-      ${DELFEM2_INC}/mat3.h               ${DELFEM2_INC}/mat3.cpp
-      ${DELFEM2_INC}/mat4.h               ${DELFEM2_INC}/mat4.cpp
-      ${DELFEM2_INC}/quat.h               ${DELFEM2_INC}/quat.cpp
-      ${DELFEM2_INC}/primitive.h          ${DELFEM2_INC}/primitive.cpp
-      ${DELFEM2_INC}/mshtopo.h            ${DELFEM2_INC}/mshtopo.cpp
-      ${DELFEM2_INC}/mshmisc.h            ${DELFEM2_INC}/mshmisc.cpp
-      ${DELFEM2_INC}/mshio.h              ${DELFEM2_INC}/mshio.cpp
-      ${DELFEM2_INC}/funcs.h              ${DELFEM2_INC}/funcs.cpp
-      ${DELFEM2_INC}/color.h              ${DELFEM2_INC}/color.cpp
-      ${DELFEM2_INC}/dtri.h               ${DELFEM2_INC}/dtri.cpp
-      ${DELFEM2_INC}/mats.h               ${DELFEM2_INC}/mats.cpp
-      ${DELFEM2_INC}/bvh.h                ${DELFEM2_INC}/bvh.cpp
-      ${DELFEM2_INC}/emat.h               ${DELFEM2_INC}/emat.cpp
-      ${DELFEM2_INC}/iss.h                ${DELFEM2_INC}/iss.cpp      
-      ${DELFEM2_INC}/vecxitrsol.h         ${DELFEM2_INC}/vecxitrsol.cpp
-      ${DELFEM2_INC}/gridvoxel.h          ${DELFEM2_INC}/gridvoxel.cpp
-      ${DELFEM2_INC}/gridcube.h           ${DELFEM2_INC}/gridcube.cpp            
-      ${DELFEM2_INC}/bv.h
-      
-      ${DELFEM2_INC}/geo3_v23m34q.h        ${DELFEM2_INC}/geo3_v23m34q.cpp
-      ${DELFEM2_INC}/rig_geo3.h            ${DELFEM2_INC}/rig_geo3.cpp
-      ${DELFEM2_INC}/dtri2_v2dtri.h        ${DELFEM2_INC}/dtri2_v2dtri.cpp
-      ${DELFEM2_INC}/dtri3_v3dtri.h        ${DELFEM2_INC}/dtri3_v3dtri.cpp
-      ${DELFEM2_INC}/cad2_dtri2.h          ${DELFEM2_INC}/cad2_dtri2.cpp
-      ${DELFEM2_INC}/fem_emats.h           ${DELFEM2_INC}/fem_emats.cpp
-      ${DELFEM2_INC}/srchuni_v3.h          ${DELFEM2_INC}/srchuni_v3.cpp
-      ${DELFEM2_INC}/ilu_mats.h            ${DELFEM2_INC}/ilu_mats.cpp
-      ${DELFEM2_INC}/objf_geo3.h           ${DELFEM2_INC}/objf_geo3.cpp
-      ${DELFEM2_INC}/objfdtri_objfdtri23.h ${DELFEM2_INC}/objfdtri_objfdtri23.cpp
-      ${DELFEM2_INC}/srch_v3bvhmshtopo.h
-      )
-else()
-  add_definitions(-DDFM2_HEADER_ONLY=ON)
-endif()
-
 set(INPUT_SRC
     ${DELFEM2_INC}/evalmathexp.h        ${DELFEM2_INC}/evalmathexp.cpp
-    ${DELFEM2_INC}/slice.h              ${DELFEM2_INC}/slice.cpp
     ${DELFEM2_INC}/mshtopoio.h          ${DELFEM2_INC}/mshtopoio.cpp
     ../../delfem2/3rd_party/io_gltf.h   ../../delfem2/3rd_party/io_gltf.cpp
-    
-    ${SRC_DFM2}
     
     ../py_funcs.h
 
