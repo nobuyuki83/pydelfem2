@@ -23,7 +23,7 @@ from .c_gl import CppGPUSampler, depth_buffer, color_buffer_4float
 from .c_gl import ColorMap
 from .c_gl import get_texture, setSomeLighting, setup_glsl
 from .c_gl import cppDrawEdge_CppMeshDynTri2D, cppDrawEdge_CppMeshDynTri3D, cppDraw_CppCad2D
-from .c_gl import draw_mesh_facenorm, draw_mesh_edge, draw_mesh_facecolor
+from .c_gl import draw_mesh_facenorm, draw_mesh_edge, draw_mesh_facecolor, draw_points_psup
 from .c_gl import cppDrawSphere
 from .c_gl import drawField_colorMap, drawField_disp, drawField_hedgehog
 

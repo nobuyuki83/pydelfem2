@@ -110,6 +110,15 @@ void PyDrawMesh_Edge
   }
 }
 
+void PyDrawPoints_Psup
+    (const py::array_t<double>& pos,
+     const py::array_t<unsigned int>& psup_ind,
+     const py::array_t<unsigned int>& psup)
+{
+  if( pos.shape()[1] == 2 ) {
+    dfm2::opengl::DrawPoints2d_Psup(pos.shape()[0],pos.data(),psup_ind.data(),psup.data());
+  }
+}
 
 
 void DrawField_ColorMap
@@ -225,6 +234,7 @@ PYBIND11_MODULE(c_gl, m) {
   
   m.def("draw_mesh_facenorm",  &PyDrawMesh_FaceNorm);
   m.def("draw_mesh_edge",      &PyDrawMesh_Edge);
+  m.def("draw_points_psup",    &PyDrawPoints_Psup);
   m.def("draw_mesh_facecolor", &PyDrawMesh_FaceColor);
 
   m.def("drawField_colorMap",   &DrawField_ColorMap);

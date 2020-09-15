@@ -6,22 +6,17 @@
  */
 
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 
 #include <vector>
-#include <map>
 #include <deque>
 
 #include "../py_funcs.h"
 
 #include "delfem2/mat3.h"
-#include "delfem2/primitive.h"
 #include "delfem2/mshtopoio.h"
 #include "delfem2/gridvoxel.h"
-#include "delfem2/gridcube.h"
 #include "delfem2/bv.h"
-#include "delfem2/iss.h"
 #include "delfem2/slice.h"
 #include "delfem2/evalmathexp.h"
 
@@ -41,6 +36,7 @@ namespace dfm2 = delfem2;
 //void init_rigidbody(py::module &m);
 void init_polyline(py::module &m);
 void init_mshtopoio(py::module &m);
+void init_primitive(py::module &m);
 void init_field(py::module &m);
 void init_fem(py::module &m);
 void init_sdf(py::module &m);
@@ -157,13 +153,13 @@ PyGLTF_GetMeshInfo
   std::vector<unsigned int> aRigJoint;
   gltf.GetMeshInfo(aXYZ0,aTri,aRigWeight,aRigJoint,
                    imesh, iprimitive);
-  const int np = aXYZ0.size()/3;
-  assert( (int)aRigWeight.size() == np*4 );
-  assert( (int)aRigJoint.size() == np*4 );
-  py::array_t<double> npXYZ0({np,3}, aXYZ0.data());
+  const unsigned int np = aXYZ0.size()/3;
+  assert( aRigWeight.size() == np*4 );
+  assert( aRigJoint.size() == np*4 );
+  py::array_t<double> npXYZ0({(int)np,3}, aXYZ0.data());
   py::array_t<unsigned int> npTri({(int)aTri.size()/3,3}, aTri.data());
-  py::array_t<double> npRW({np,4}, aRigWeight.data());
-  py::array_t<unsigned int> npRJ({np,4}, aRigJoint.data());
+  py::array_t<double> npRW({(int)np,4}, aRigWeight.data());
+  py::array_t<unsigned int> npRJ({(int)np,4}, aRigJoint.data());
   return std::make_tuple(npXYZ0,npTri,npRW,npRJ);
 }
 
@@ -232,12 +228,11 @@ void PyCad2D_ImportSVG
   ReadSVG_LoopEdgeCCad2D(aaEdge,
                          path_svg);
   cad.Clear();
-  for(unsigned int ie=0;ie<aaEdge.size();++ie){
-    std::vector<dfm2::CCad2D_EdgeGeo> aEdge = aaEdge[ie];
+  for(auto aEdge : aaEdge){
     Transform_LoopEdgeCad2D(aEdge,false,true,scale_x,scale_y);
     if( AreaLoop(aEdge) < 0 ){ aEdge = InvertLoop(aEdge); }
     aEdge = RemoveEdgeWithZeroLength(aEdge);
-    for(unsigned int ie=0;ie<aEdge.size();++ie){ aEdge[ie].GenMeshLength(-1); }
+    for(auto & ie : aEdge){ ie.GenMeshLength(-1); }
     cad.AddFace(aEdge);
   }
 }
@@ -287,6 +282,7 @@ PYBIND11_MODULE(c_core, m) {
   // ------------------------
   
   init_mshtopoio(m);
+  init_primitive(m);
   init_polyline(m);
   init_field(m);
   init_fem(m);

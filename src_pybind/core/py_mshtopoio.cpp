@@ -22,23 +22,6 @@ namespace dfm2 = delfem2;
 
 // ----------------------------------------------------------
 
-std::tuple<
-    py::array_t<double>,
-    py::array_t<unsigned int>
-    >
-PyMeshQuad2D_Grid(
-    int mx,
-    int my)
-{
-  std::vector<double> aXY;
-  std::vector<unsigned int> aQuad;
-  dfm2::MeshQuad2D_Grid(aXY, aQuad,
-                        mx-1, my-1);
-  py::array_t<double> npXY({(int)aXY.size()/2,2}, aXY.data());
-  py::array_t<unsigned int> npQuad({(int)aQuad.size()/4,4}, aQuad.data());
-  return std::make_tuple(npXY,npQuad);
-}
-
 void PySetTopology_ExtrudeTri2Tet(
     py::array_t<unsigned int>& npTet,
     int nlayer,
@@ -212,20 +195,20 @@ PyCopyMeshDynTri2D(
 {
   assert( AssertNumpyArray2D(npPos, -1, 2) );
   assert( AssertNumpyArray2D(npElm, -1, 3) );
-  const int np = mesh.aEPo.size();
-  const int ntri = mesh.aETri.size();
+  const unsigned int np = mesh.aEPo.size();
+  const unsigned int ntri = mesh.aETri.size();
   assert(npPos.shape()[0]==np);
   assert(npElm.shape()[0]==ntri);
   {
     double* pP = (double*)(npPos.request().ptr);
-    for(int ip=0;ip<np;++ip){
+    for(unsigned int ip=0;ip<np;++ip){
       pP[ip*2+0] = mesh.aVec2[ip].x();
       pP[ip*2+1] = mesh.aVec2[ip].y();
     }
   }
   {
-    int* pT = (int*)(npElm.request().ptr);
-    for(int it=0;it<ntri;++it){
+    unsigned int* pT = (unsigned int*)(npElm.request().ptr);
+    for(unsigned int it=0;it<ntri;++it){
       pT[it*3+0] = mesh.aETri[it].v[0];
       pT[it*3+1] = mesh.aETri[it].v[1];
       pT[it*3+2] = mesh.aETri[it].v[2];
@@ -319,10 +302,6 @@ PyJArray_AddDiagonal(
   return std::make_tuple(np_psup_ind, np_psup);
 }
 
-
-
-
-
 py::array_t<unsigned int>
 PyElemQuad_DihedralTri(
     py::array_t<unsigned int>& aTri,
@@ -351,8 +330,31 @@ PyQuality_MeshTri2D(
    return std::make_tuple(max_aspect, min_area);
 }
 
+py::array_t<double>
+PyMassPoint_MeshTri(
+    py::array_t<double>& npXY,
+    py::array_t<unsigned int>& npTri)
+{
+  assert( AssertNumpyArray2D(npTri, -1, 3) );
+  assert( npXY.ndim() == 2 );
+  const unsigned int np = npXY.shape()[0];
+  py::array_t<double> npMass(np);
+  double* paMass = (double*)npMass.request(true).ptr;
+  if( npXY.shape()[1] == 2 ) {
+    dfm2::MassPoint_Tri2D(paMass, 1.0,
+                          npXY.data(), npXY.shape()[0],
+                          npTri.data(), npTri.shape()[0]);
+  }
+  else if( npXY.shape()[1] == 3 ) {
+    dfm2::MassPoint_Tri3D(paMass, 1.0,
+                          npXY.data(), npXY.shape()[0],
+                          npTri.data(), npTri.shape()[0]);
+  }
+  return npMass;
+}
 
-void PyMapValue(
+void
+PyMapValue(
     py::array_t<double>& npV,
     dfm2::CCmdRefineMesh& mpr)
 {
@@ -400,8 +402,8 @@ PyNormalVtx_Mesh(
   }
 }
 
-
-py::array_t<unsigned int> PyEdge_Mesh(
+py::array_t<unsigned int>
+PyEdge_Mesh(
     const py::array_t<double>& pos,
     const py::array_t<unsigned int>& elm,
     const dfm2::MESHELEM_TYPE type)
@@ -419,82 +421,6 @@ py::array_t<unsigned int> PyEdge_Mesh(
                             edge_ind, edge);
   py::array_t<unsigned int> npLine({(int)aLine.size()/2,2}, aLine.data());
   return npLine;
-}
-
-std::tuple<
-    py::array_t<double>,
-    py::array_t<unsigned int>
-    >
-PyMeshTri3D_Cylinder(
-    double r,
-    double l,
-    int nr,
-    int nl)
-{
-  std::vector<double> aXYZ;
-  std::vector<unsigned int> aTri;
-  dfm2::MeshTri3D_CylinderClosed(aXYZ, aTri, r, l, nr, nl);
-  py::array_t<unsigned int> npTri({(int)aTri.size()/3,3}, aTri.data());
-  py::array_t<double> npXYZ({(int)aXYZ.size()/3,3}, aXYZ.data());
-  return std::make_tuple(npXYZ,npTri);
-}
-
-std::tuple< py::array_t<double>, py::array_t<unsigned int> >
-PyMeshTri3D_Cube(int n)
-{
-  std::vector<double> aXYZ;
-  std::vector<unsigned int> aTri;
-  dfm2::MeshTri3D_Cube(aXYZ, aTri, n);
-  py::array_t<unsigned int> npTri({(int)aTri.size()/3,3}, aTri.data());
-  py::array_t<double> npXYZ({(int)aXYZ.size()/3,3}, aXYZ.data());
-  return std::make_tuple(npXYZ,npTri);
-}
-
-std::tuple< py::array_t<double>, py::array_t<unsigned int> >
-PyMeshTri3D_Sphere(double r, int nla, int nlo)
-{
-  std::vector<double> aXYZ;
-  std::vector<unsigned int> aTri;
-  dfm2::MeshTri3D_Sphere(aXYZ,aTri, r,nla,nlo);
-  py::array_t<unsigned int> npTri({(int)aTri.size()/3,3}, aTri.data());
-  py::array_t<double> npXYZ({(int)aXYZ.size()/3,3}, aXYZ.data());
-  return std::make_tuple(npXYZ,npTri);
-}
-
-std::tuple< py::array_t<double>, py::array_t<unsigned int> >
-PyMeshTri3D_GeoPoly()
-{
-  std::vector<double> aXYZ;
-  std::vector<unsigned int> aTri;
-  MeshTri3D_GeodesicPolyhedron(aXYZ,aTri);
-  py::array_t<unsigned int> npTri({(int)aTri.size()/3,3}, aTri.data());
-  py::array_t<double> npXYZ({(int)aXYZ.size()/3,3}, aXYZ.data());
-  return std::make_tuple(npXYZ,npTri);
-}
-
-
-std::tuple< py::array_t<double>, py::array_t<unsigned int> >
-PyMeshTri3D_Icosahedron()
-{
-  std::vector<double> aXYZ;
-  std::vector<unsigned int> aTri;
-  dfm2::MeshTri3D_Icosahedron(aXYZ,aTri);
-  py::array_t<unsigned int> npTri({(int)aTri.size()/3,3}, aTri.data());
-  py::array_t<double> npXYZ({(int)aXYZ.size()/3,3}, aXYZ.data());
-  return std::make_tuple(npXYZ,npTri);
-}
-
-
-std::tuple< py::array_t<double>, py::array_t<unsigned int> >
-PyMeshTri3D_Torus(double r0, double r1)
-{
-  std::vector<double> aXYZ;
-  std::vector<unsigned int> aTri;
-  dfm2::MeshTri3_Torus(aXYZ,aTri,
-                       r0, r1, 18, 32);
-  py::array_t<unsigned int> npTri({(int)aTri.size()/3,3}, aTri.data());
-  py::array_t<double> npXYZ({(int)aXYZ.size()/3,3}, aXYZ.data());
-  return std::make_tuple(npXYZ,npTri);
 }
 
 // --------------------------------------
@@ -563,16 +489,7 @@ void init_mshtopoio(py::module &m){
   m.def("meshtri3d_read_obj",     &PyMeshTri3D_ReadObj,     py::return_value_policy::move);
   m.def("meshtri3d_read_nastran", &PyMeshTri3D_ReadNastran, py::return_value_policy::move);
   
-  // primitive
-  m.def("meshquad2d_grid",          &PyMeshQuad2D_Grid,       py::return_value_policy::move);
-  m.def("cppMeshTri3D_Torus",       &PyMeshTri3D_Torus,       py::return_value_policy::move);
-  m.def("cppMeshTri3D_Cylinder",    &PyMeshTri3D_Cylinder,    py::return_value_policy::move);
-  m.def("cppMeshTri3D_Sphere",      &PyMeshTri3D_Sphere,      py::return_value_policy::move);
-  m.def("cppMeshTri3D_Cube",        &PyMeshTri3D_Cube,        py::return_value_policy::move);
-  m.def("cppMeshTri3D_GeoPoly",     &PyMeshTri3D_GeoPoly,     py::return_value_policy::move);
-  m.def("cppMeshTri3D_Icosahedron", &PyMeshTri3D_Icosahedron, py::return_value_policy::move);
-  
-  // subdiv
+ // subdiv
   m.def("meshquad3d_subdiv",      &PyMeshQuad3D_Subviv,     py::return_value_policy::move);
   m.def("meshhex3d_subdiv",       &PyMeshHex3D_Subviv,      py::return_value_policy::move);
   
@@ -585,4 +502,5 @@ void init_mshtopoio(py::module &m){
   
   m.def("elemQuad_dihedralTri",&PyElemQuad_DihedralTri);
   m.def("quality_meshTri2D",   &PyQuality_MeshTri2D);
+  m.def("cppMassPoint_MeshTri",&PyMassPoint_MeshTri);
 }

@@ -43,6 +43,7 @@ set(INPUT_SRC
     ../py_funcs.h
 
     py_mshtopoio.cpp
+    py_primitive.cpp
     py_polyline.cpp
     py_field.cpp
     py_fem.cpp

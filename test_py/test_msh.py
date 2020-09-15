@@ -40,7 +40,7 @@ class Test_Mesh():
 
   def test3(self,request):
     msh = dfm2.Mesh()
-    msh.set_grid((32,16))
+    msh.set_grid([32,16])
     assert msh is not None
     if request.config.getoption('--is_gl') == "true":
       dfm2.gl.glfw.winDraw3d([msh],nframe=20)

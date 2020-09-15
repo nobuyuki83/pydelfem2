@@ -14,7 +14,6 @@ from .c_core import CAD_EDGE_GEOM_LINE, CAD_EDGE_GEOM_BEZIER_CUBIC, CAD_EDGE_GEO
 from .c_core import cppCad2D_ImportSVG, cppSVG_Polyline
 from .c_core import TRI, QUAD, HEX, TET, LINE
 from .c_core import \
-  meshquad2d_grid, \
   meshquad3d_voxelgrid, \
   meshquad3d_subdiv, \
   meshhex3d_voxelgrid, \
@@ -29,6 +28,7 @@ from .c_core import numpyXYTri_MeshDynTri2D
 from .c_core import setTopology_ExtrudeTri2Tet
 from .c_core import cppNormalVtx_Mesh, cppEdge_Mesh
 from .c_core import \
+  cppMeshQuad2D_Grid, \
   cppMeshTri3D_Cylinder, \
   cppMeshTri3D_Sphere, \
   cppMeshTri3D_GeoPoly, \
@@ -135,7 +135,7 @@ class Mesh():
 
   def set_grid(self,shape:List[int]):
     if len(shape) == 2:
-      self.np_pos, self.np_elm = meshquad2d_grid(shape[0], shape[1])
+      self.np_pos, self.np_elm = cppMeshQuad2D_Grid(shape[0], shape[1])
       self.elem_type = QUAD
 
   def set_extrude(self, msh0:'Mesh', nlayer:int):

@@ -14,6 +14,7 @@ from .c_core import cad_getPointsEdge, mvc
 from .c_core import CppMeshDynTri3D, CppCad2D
 from .c_core import CppGLTF, CppGLTF_GetMeshInfo, CppGLTF_GetBones, update_rig_skin, update_bone_transform
 from .c_core import cppJArray_MeshPsup
+from .c_core import cppMassPoint_MeshTri
 
 from .c_core import isoline_svg
 
