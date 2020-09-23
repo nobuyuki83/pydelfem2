@@ -36,6 +36,7 @@ namespace dfm2 = delfem2;
 //void init_rigidbody(py::module &m);
 void init_polyline(py::module &m);
 void init_mshtopoio(py::module &m);
+void init_dynmsh(py::module &m);
 void init_primitive(py::module &m);
 void init_field(py::module &m);
 void init_fem(py::module &m);
@@ -112,8 +113,8 @@ py::array_t<double> PyMVC
 (const py::array_t<double>& XY,
  const py::array_t<double>& XY_bound)
 {
-  assert( AssertNumpyArray2D(XY, -1, 2) );
-  assert( AssertNumpyArray2D(XY_bound, -1, 2) );
+  assert( CheckNumpyArray2D(XY, -1, 2) );
+  assert( CheckNumpyArray2D(XY_bound, -1, 2) );
   const int np = XY.shape()[0];
   const int npb = XY_bound.shape()[0];
   py::array_t<double> aW({np,npb});
@@ -198,11 +199,11 @@ void PyUpdateRigSkin
  const py::array_t<double>& npRigWeight,
  const py::array_t<unsigned int>& npRigJoint)
 {
-  assert( AssertNumpyArray2D(npXYZ, -1, 3) );
-  assert( AssertNumpyArray2D(npXYZ0, -1, 3) );
-  assert( AssertNumpyArray2D(npTri, -1, 3) );
-  assert( AssertNumpyArray2D(npRigWeight, -1, 4) );
-  assert( AssertNumpyArray2D(npRigJoint, -1, 4) );
+  assert( CheckNumpyArray2D(npXYZ, -1, 3) );
+  assert( CheckNumpyArray2D(npXYZ0, -1, 3) );
+  assert( CheckNumpyArray2D(npTri, -1, 3) );
+  assert( CheckNumpyArray2D(npRigWeight, -1, 4) );
+  assert( CheckNumpyArray2D(npRigJoint, -1, 4) );
   assert( npXYZ.shape()[0] == npXYZ0.shape()[0] );
   assert( npXYZ.shape()[0] == npRigWeight.shape()[0] );
   assert( npXYZ.shape()[0] == npRigJoint.shape()[0] );
@@ -244,8 +245,8 @@ void PyIsoSurfaceToSVG
   const py::array_t<double>& npVal,
   double scale)
 {
-  assert( AssertNumpyArray2D(npXY, -1, 2) );
-  assert( AssertNumpyArray2D(npTri, -1, 3) );
+  assert( CheckNumpyArray2D(npXY, -1, 2) );
+  assert( CheckNumpyArray2D(npTri, -1, 3) );
   assert( npVal.ndim() == 1 );
   assert( npVal.size() == npXY.shape()[0] );
   assert( npVal.strides()[0] == sizeof(double) );
@@ -287,6 +288,7 @@ PYBIND11_MODULE(c_core, m) {
   init_field(m);
   init_fem(m);
   init_sdf(m);
+  init_dynmsh(m);
 //  init_rigidbody(m);
   
   // ----------------------

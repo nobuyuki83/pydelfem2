@@ -43,7 +43,15 @@ from .c_core import \
   write_vtk_pointscalar, \
   write_vtk_pointvector  
 from .c_core import matrixSquareSparse_setFixBC
-from .c_core import elemQuad_dihedralTri, cppJArray_MeshPsup, jarray_add_diagonal, cppJArray_Sort
+from .c_core import elemQuad_dihedralTri 
+
+# jarray
+from .c_core import \
+  cppJArray_MeshPsup, \
+  cppJarray_AddDiagonal, \
+  cppJArray_Sort, \
+  cppJArray_Extend
+
 from .c_core import map_value
 from .c_core import MathExpressionEvaluator
 from .c_core import cppMassPoint_Mesh, cppMassLumped_ShellPlateBendingMitc3
@@ -728,7 +736,7 @@ class PBD():
     self.vec_velo = numpy.zeros_like(self.vec_val, dtype=numpy.float64)
     self.vec_tpos = mesh.np_pos.copy()
     self.psup = mesh.psup()
-    self.psup = jarray_add_diagonal(*self.psup)
+    self.psup = cppJarray_AddDiagonal(*self.psup)
 
   def step_time(self):
     self.vec_tpos[:] = self.vec_val + self.dt * self.vec_velo

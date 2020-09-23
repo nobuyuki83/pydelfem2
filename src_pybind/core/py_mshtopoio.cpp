@@ -8,14 +8,9 @@
 #include <vector>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
-
 #include "../py_funcs.h"
 
 #include "delfem2/mshtopoio.h"
-#include "delfem2/primitive.h"
-
-#include "delfem2/dtri2_v2dtri.h"
-#include "delfem2/dtri3_v3dtri.h"
 
 namespace py = pybind11;
 namespace dfm2 = delfem2;
@@ -28,8 +23,8 @@ void PySetTopology_ExtrudeTri2Tet(
     int nXY,
     const py::array_t<unsigned int>& npTri)
 {
-  assert( AssertNumpyArray2D(npTet, -1, 4) );
-  assert( AssertNumpyArray2D(npTri, -1, 3) );
+  assert( CheckNumpyArray2D(npTet, -1, 4) );
+  assert( CheckNumpyArray2D(npTri, -1, 3) );
   dfm2::SetTopology_ExtrudeTri2Tet((unsigned int*)(npTet.request().ptr),
       nXY,
       npTri.data(), npTri.shape()[0],
@@ -74,8 +69,8 @@ PyMeshTri3D_WriteObj(
     const py::array_t<double>& aXYZ,
     const py::array_t<unsigned int>& aTri)
 {
-  assert( AssertNumpyArray2D(aXYZ, -1, 3) );
-  assert( AssertNumpyArray2D(aTri, -1, 3) );
+  assert( CheckNumpyArray2D(aXYZ, -1, 3) );
+  assert( CheckNumpyArray2D(aTri, -1, 3) );
   delfem2::Write_Obj(fname,
             aXYZ.data(), aXYZ.shape()[0],
             aTri.data(), aTri.shape()[0]);
@@ -104,8 +99,8 @@ PyMeshQuad3D_Subviv(
     const py::array_t<double>& aXYZ0,
     const py::array_t<unsigned int>& aQuad0)
 {
-  assert( AssertNumpyArray2D(aXYZ0, -1, 3) );
-  assert( AssertNumpyArray2D(aQuad0, -1, 4) );
+  assert( CheckNumpyArray2D(aXYZ0, -1, 3) );
+  assert( CheckNumpyArray2D(aQuad0, -1, 4) );
   std::vector<unsigned int> aQuad1;
   std::vector<unsigned int> psupIndQuad0, psupQuad0;
   std::vector<int> aEdgeFace0;
@@ -131,8 +126,8 @@ PyMeshHex3D_Subviv(
     const py::array_t<double>& aXYZ0,
     const py::array_t<unsigned int>& aHex0)
 {
-  assert( AssertNumpyArray2D(aXYZ0, -1, 3) );
-  assert( AssertNumpyArray2D(aHex0, -1, 8) );
+  assert( CheckNumpyArray2D(aXYZ0, -1, 3) );
+  assert( CheckNumpyArray2D(aHex0, -1, 8) );
   std::vector<unsigned int> aHex1;
   std::vector<unsigned int> psupIndHex0, psupHex0;
   std::vector<unsigned int> aQuadHex0;
@@ -152,71 +147,6 @@ PyMeshHex3D_Subviv(
 }
 
 // -------------------------------------------------------------
-
-void
-PyMeshDynTri3D_Initialize(
-    dfm2::CMeshDynTri3D& mesh,
-    const py::array_t<double>& po,
-    const py::array_t<unsigned int>& tri)
-{
-  assert( AssertNumpyArray2D(po, -1, -1) ); // 2d or 3d
-  assert( AssertNumpyArray2D(tri, -1, 3) );
-  mesh.Initialize(po.data(), po.shape()[0], po.shape()[1],
-                  tri.data(), tri.shape()[0]);
-}
-
-void
-PyMeshDynTri2D_Initialize(
-    dfm2::CMeshDynTri2D& mesh,
-    const py::array_t<double>& po,
-    const py::array_t<unsigned int>& tri)
-{
-  assert( AssertNumpyArray2D(po, -1, 2) );
-  assert( AssertNumpyArray2D(tri, -1, 3) );
-  mesh.Initialize(po.data(), po.shape()[0],
-                  tri.data(), tri.shape()[0]);
-}
-
-void
-PySetXY_MeshDynTri2D(
-    dfm2::CMeshDynTri2D& mesh,
-    const py::array_t<double>& npXY)
-{
-  assert( AssertNumpyArray2D(npXY, -1, 2) );
-  assert(npXY.shape()[1]==2);
-  mesh.setXY(npXY.data(), npXY.shape()[0]);
-}
-
-void
-PyCopyMeshDynTri2D(
-    py::array_t<double>& npPos,
-    py::array_t<unsigned int>& npElm,
-    const dfm2::CMeshDynTri2D& mesh)
-{
-  assert( AssertNumpyArray2D(npPos, -1, 2) );
-  assert( AssertNumpyArray2D(npElm, -1, 3) );
-  const unsigned int np = mesh.aEPo.size();
-  const unsigned int ntri = mesh.aETri.size();
-  assert(npPos.shape()[0]==np);
-  assert(npElm.shape()[0]==ntri);
-  {
-    double* pP = (double*)(npPos.request().ptr);
-    for(unsigned int ip=0;ip<np;++ip){
-      pP[ip*2+0] = mesh.aVec2[ip].x();
-      pP[ip*2+1] = mesh.aVec2[ip].y();
-    }
-  }
-  {
-    unsigned int* pT = (unsigned int*)(npElm.request().ptr);
-    for(unsigned int it=0;it<ntri;++it){
-      pT[it*3+0] = mesh.aETri[it].v[0];
-      pT[it*3+1] = mesh.aETri[it].v[1];
-      pT[it*3+2] = mesh.aETri[it].v[2];
-    }
-  }
-}
-
-// ----------------------------------------------------------------------
 
 /*
 std::tuple<std::vector<double>,std::vector<int>>
@@ -278,12 +208,29 @@ PyJArray_MeshPsup(
 
 void
 PyJArray_Sort(
-    py::array_t<unsigned int>& psup_ind,
+    const py::array_t<unsigned int>& psup_ind,
     py::array_t<unsigned int>& psup)
 {
-  //  std::cout << "hoge " << psup_ind.size() << " " << psup.size() << std::endl;
-  auto buff_psup = psup.request();
-  dfm2::JArray_Sort(psup_ind.data(), psup_ind.shape()[0]-1, (unsigned int*)buff_psup.ptr);
+  assert( CheckJArray(psup_ind,psup) );
+  dfm2::JArray_Sort(psup_ind.data(), psup_ind.shape(0)-1, psup.mutable_data() );
+}
+
+std::tuple<
+    py::array_t<unsigned int>,
+    py::array_t<unsigned int>
+    >
+PyJArray_Extend(
+    const py::array_t<unsigned int>& psup_ind,
+    const py::array_t<unsigned int>& psup)
+{
+  assert( CheckJArray(psup_ind,psup) );
+  std::vector<unsigned int> psup_ind1, psup1;
+  dfm2::JArray_Extend(
+      psup_ind1, psup1,
+      psup_ind.data(), psup_ind.shape()[0], psup.data() );
+  py::array_t<unsigned int> np_psup_ind1((pybind11::size_t)psup_ind1.size(), psup_ind1.data());
+  py::array_t<unsigned int> np_psup1((pybind11::size_t)psup1.size(), psup1.data());
+  return std::make_tuple(np_psup_ind1, np_psup1);
 }
 
 std::tuple<
@@ -291,8 +238,8 @@ std::tuple<
     py::array_t<unsigned int>
     >
 PyJArray_AddDiagonal(
-    py::array_t<unsigned int>& psup_ind0,
-    py::array_t<unsigned int>& psup0)
+    const py::array_t<unsigned int>& psup_ind0,
+    const py::array_t<unsigned int>& psup0)
 {
   std::vector<unsigned int> psup_ind, psup;
   dfm2::JArray_AddDiagonal(psup_ind,psup,
@@ -304,10 +251,10 @@ PyJArray_AddDiagonal(
 
 py::array_t<unsigned int>
 PyElemQuad_DihedralTri(
-    py::array_t<unsigned int>& aTri,
+    const py::array_t<unsigned int>& aTri,
     int np)
 {
-  assert( AssertNumpyArray2D(aTri, -1, 3) );
+  assert( CheckNumpyArray2D(aTri, -1, 3) );
   const unsigned int nTri = aTri.shape()[0];
   std::vector<unsigned int> aQuad;
   dfm2::ElemQuad_DihedralTri(aQuad, aTri.data(), nTri, np);
@@ -320,8 +267,8 @@ PyQuality_MeshTri2D(
     const py::array_t<double>& np_xy,
     const py::array_t<unsigned int>& np_tri)
 {
-  assert( AssertNumpyArray2D(np_xy, -1, 2) );
-  assert( AssertNumpyArray2D(np_tri, -1, 3) );
+  assert( CheckNumpyArray2D(np_xy, -1, 2) );
+  assert( CheckNumpyArray2D(np_tri, -1, 3) );
   double max_aspect;
   double min_area;
   dfm2::Quality_MeshTri2D(max_aspect, min_area,
@@ -335,7 +282,7 @@ PyMassPoint_MeshTri(
     py::array_t<double>& npXY,
     py::array_t<unsigned int>& npTri)
 {
-  assert( AssertNumpyArray2D(npTri, -1, 3) );
+  assert( CheckNumpyArray2D(npTri, -1, 3) );
   assert( npXY.ndim() == 2 );
   const unsigned int np = npXY.shape()[0];
   py::array_t<double> npMass(np);
@@ -354,46 +301,15 @@ PyMassPoint_MeshTri(
 }
 
 void
-PyMapValue(
-    py::array_t<double>& npV,
-    dfm2::CCmdRefineMesh& mpr)
-{
-  /*
-  assert(npOut.shape()[0]==(int)mpr.iv_ind.size()-1);
-  assert(npIn.shape()[0]==(int)mpr.nv_in);
-  assert(npIn.shape()[1]==npIn.shape()[1]);
-  const int ndimval = npIn.shape()[1];
-  const int np1 = npOut.shape()[0];
-  double* pV = (double*)(npOut.request().ptr);
-  for(int i=0;i<np1*ndimval;++i){ pV[i] = 0.0; }
-  for(int ip=0;ip<np1;++ip){
-    for(int iip=mpr.iv_ind[ip];iip<mpr.iv_ind[ip+1];++iip){
-      int jp = mpr.iv[iip];
-      double w0 = mpr.w[iip];
-      for(int idim=0;idim<ndimval;++idim){
-        pV[ip*ndimval+idim] += w0*npIn.at(jp,idim);
-      }
-    }
-  }
-   */
-  assert( npV.ndim() == 2 );
-  const int np = npV.shape()[0];
-  const int ndim = npV.shape()[1];
-  double* pV = (double*)(npV.request().ptr);
-  mpr.Interpolate(pV, np, ndim);
-}
-
-
-void
 PyNormalVtx_Mesh(
     py::array_t<double>& nrm,
     const py::array_t<double>& pos,
     const py::array_t<unsigned int>& elm,
     const dfm2::MESHELEM_TYPE type)
 {
-  assert( AssertNumpyArray2D(pos, -1, 3) );
-  assert( AssertNumpyArray2D(elm, -1, 3) );
-  assert( AssertNumpyArray2D(nrm, -1, 3) );
+  assert( CheckNumpyArray2D(pos, -1, 3) );
+  assert( CheckNumpyArray2D(elm, -1, 3) );
+  assert( CheckNumpyArray2D(nrm, -1, 3) );
   assert( nrm.shape()[0] == pos.shape()[0] );
   if( type == dfm2::MESHELEM_TRI ){
     delfem2::Normal_MeshTri3D((double*)(nrm.request().ptr),
@@ -408,8 +324,8 @@ PyEdge_Mesh(
     const py::array_t<unsigned int>& elm,
     const dfm2::MESHELEM_TYPE type)
 {
-  assert( AssertNumpyArray2D(pos, -1, pos.shape()[1]) );
-  assert( AssertNumpyArray2D(elm, -1, nNodeElem(type)) );
+  assert( CheckNumpyArray2D(pos, -1, pos.shape()[1]) );
+  assert( CheckNumpyArray2D(elm, -1, nNodeElem(type)) );
   std::vector<unsigned int> elsup_ind, elsup;
   dfm2::JArray_ElSuP_MeshElem(elsup_ind, elsup,
                               elm.data(), elm.shape()[0], elm.shape()[1], pos.shape()[0]);
@@ -443,51 +359,19 @@ void init_mshtopoio(py::module &m){
   .def("read_obj",    &CMeshMultiElem::ReadObj)
   .def("scaleXYZ",    &CMeshMultiElem::ScaleXYZ)
   .def("translateXYZ",&CMeshMultiElem::TranslateXYZ);
-  
-  py::class_<dfm2::CMeshDynTri3D>(m, "CppMeshDynTri3D")
-  .def(py::init<>())
-  .def("minmax_xyz",            &dfm2::CMeshDynTri3D::MinMax_XYZ)
-  //
-  .def("check",                 &dfm2::CMeshDynTri3D::Check)
-  .def("ntri",                  &dfm2::CMeshDynTri3D::nTri)
-  .def("delete_tri_edge",       &dfm2::CMeshDynTri3D::DeleteTriEdge)
-  .def("insert_point_elem",     &dfm2::CMeshDynTri3D::insertPointElem)
-  .def("delaunay_around_point", &dfm2::CMeshDynTri3D::DelaunayAroundPoint);
-  
-  py::class_<dfm2::CMeshDynTri2D>(m, "CppMeshDynTri2D")
-  .def(py::init<>())
-  .def("minmax_xyz",            &dfm2::CMeshDynTri2D::MinMax_XYZ)
-  //
-  .def("check",                 &dfm2::CMeshDynTri2D::Check)
-  .def("ntri",                  &dfm2::CMeshDynTri2D::nTri)
-  .def("npoint",                &dfm2::CMeshDynTri2D::nPoint)
-  .def("delete_tri_edge",       &dfm2::CMeshDynTri2D::DeleteTriEdge)
-  .def("insert_point_elem",     &dfm2::CMeshDynTri2D::insertPointElem)
-  .def("delaunay_around_point", &dfm2::CMeshDynTri2D::DelaunayAroundPoint)
-  .def("meshing_loops",         &dfm2::CMeshDynTri2D::meshing_loops)
-  .def("refinementPlan_EdgeLongerThan_InsideCircle",   &dfm2::CMeshDynTri2D::RefinementPlan_EdgeLongerThan_InsideCircle);
-  
-  py::class_<dfm2::CCmdRefineMesh>(m, "CppMapper")
-  .def(py::init<>());
-  
-  m.def("map_value",    &PyMapValue);
-  
+
   m.def("num_node_elem", &dfm2::nNodeElem);
-  
-  // dyntri
-  m.def("meshdyntri3d_initialize",&PyMeshDynTri3D_Initialize);
-  m.def("meshdyntri2d_initialize",&PyMeshDynTri2D_Initialize);
-  m.def("copyMeshDynTri2D",       &PyCopyMeshDynTri2D);
-  m.def("setXY_MeshDynTri2D",     &PySetXY_MeshDynTri2D);
-  
+
   m.def("cppNormalVtx_Mesh",      &PyNormalVtx_Mesh);
   m.def("cppEdge_Mesh",           &PyEdge_Mesh);
   
-  // io
+  // io read
   m.def("meshtri3d_read_ply",     &PyMeshTri3D_ReadPly,     py::return_value_policy::move);
-  m.def("meshtri3d_write_obj",    &PyMeshTri3D_WriteObj);
   m.def("meshtri3d_read_obj",     &PyMeshTri3D_ReadObj,     py::return_value_policy::move);
   m.def("meshtri3d_read_nastran", &PyMeshTri3D_ReadNastran, py::return_value_policy::move);
+
+  // io write
+  m.def("meshtri3d_write_obj",    &PyMeshTri3D_WriteObj);
   
  // subdiv
   m.def("meshquad3d_subdiv",      &PyMeshQuad3D_Subviv,     py::return_value_policy::move);
@@ -496,10 +380,11 @@ void init_mshtopoio(py::module &m){
   m.def("setTopology_ExtrudeTri2Tet", &PySetTopology_ExtrudeTri2Tet);
   
   // jarray
-  m.def("cppJArray_MeshPsup",  &PyJArray_MeshPsup,    py::return_value_policy::move);
-  m.def("jarray_add_diagonal", &PyJArray_AddDiagonal, py::return_value_policy::move);
-  m.def("cppJArray_Sort",      &PyJArray_Sort);
-  
+  m.def("cppJArray_MeshPsup",    &PyJArray_MeshPsup,    py::return_value_policy::move);
+  m.def("cppJarray_AddDiagonal", &PyJArray_AddDiagonal, py::return_value_policy::move);
+  m.def("cppJArray_Sort",        &PyJArray_Sort,        py::return_value_policy::move);
+  m.def("cppJArray_Extend",      &PyJArray_Extend,      py::return_value_policy::move);
+
   m.def("elemQuad_dihedralTri",&PyElemQuad_DihedralTri);
   m.def("quality_meshTri2D",   &PyQuality_MeshTri2D);
   m.def("cppMassPoint_MeshTri",&PyMassPoint_MeshTri);
