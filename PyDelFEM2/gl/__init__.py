@@ -8,7 +8,7 @@
 import OpenGL.GL as gl
 import numpy
 
-from ..cadmsh import Mesh, MeshColor
+from ..msh import Mesh, MeshColor
 
 from ..c_core import CppMeshDynTri2D, CppMeshDynTri3D, CppCad2D
 from ..c_core import TRI, QUAD, LINE

@@ -57,7 +57,7 @@ from .c_core import MathExpressionEvaluator
 from .c_core import cppMassPoint_Mesh, cppMassLumped_ShellPlateBendingMitc3
 from .c_core import CppSDF3
 
-from .cadmsh import Mesh, MeshDynTri2D
+from .msh import Mesh, MeshDynTri2D
 
 
 def normalize_rigmsh(rigmsh):

@@ -19,6 +19,15 @@ cd buildMake
 cmake -DPYTHON_EXECUTABLE:PATH=${PATH_PYTHON}  ..
 cd ../../../
 
+echo "###################"
+echo "# setup environment"
+python3 -m venv myenv
+source myenv/bin/activate
+python3 -m pip install --upgrade pip
+# 3D utility
+python3 -m pip install -U PyOpenGL 
+python3 -m pip install -U glfw
+
 pip3 uninstall PyDelFEM2 -y
 pip3 uninstall PyDelFEM2 -y
 pip3 install -e .
