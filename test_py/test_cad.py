@@ -84,7 +84,7 @@ class Test_Cad2D():
     dmsh = mesher.meshing(cad)
     assert dmsh.np_pos.shape[1] == 2
     np_xy_bound = numpy.array(cad.ccad.xy_vtxctrl_face(0)).reshape([-1, 2])
-    W = dfm2.mvc(dmsh.np_pos, np_xy_bound)
+    W = dfm2.cppMvc(dmsh.np_pos, np_xy_bound)
     assert W.ndim == 2
     assert W.shape[0] == dmsh.np_pos.shape[0]
     assert W.shape[1] == len(cad.ccad.xy_vtxctrl_face(0))/2

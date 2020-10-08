@@ -13,3 +13,4 @@ src_pybind/gl/buildMake/
 test_py/__pycache__/
 *.cbp
 cmake-build-debug
+*.vtk

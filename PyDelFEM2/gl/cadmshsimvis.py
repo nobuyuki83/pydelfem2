@@ -1,23 +1,24 @@
 import numpy
 from typing import List
 
-from .c_core import TRI
+from ..c_core import TRI
 
-from .fem import \
+from ..fem import \
   FEM_ScalarPoisson, \
   FEM_ScalarDiffuse, \
   FEM_SolidLinearStatic, \
   FEM_SolidLinearEigen,\
   FEM_ShellPlateBendingMITC3_Eigen
-from .fem import PBD, PBD_Cloth
-from .fem import FieldValueSetter
+from ..fem import PBD, PBD_Cloth
+from ..fem import FieldValueSetter
 
-from .cadmsh import CadMesh2D, cad_getPointsEdge, Mesh
+from ..cad import CadMesh2D, cad_getPointsEdge
+from ..msh import Mesh
 
-from .gl.c_gl import setSomeLighting
+from .c_gl import setSomeLighting
 
 import OpenGL.GL as gl
-from .gl import VisFEM_ColorContour
+from ..gl import VisFEM_ColorContour
 
 
 class CadMesh2D_FEMPoisson(CadMesh2D):

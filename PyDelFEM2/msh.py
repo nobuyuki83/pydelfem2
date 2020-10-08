@@ -20,7 +20,7 @@ from .c_core import \
   meshhex3d_subdiv,\
   meshdyntri2d_initialize
 from .c_core import meshtri3d_read_ply, meshtri3d_read_obj, meshtri3d_read_nastran, meshtri3d_write_obj
-from .c_core import mvc
+from .c_core import cppMvc
 from .c_core import setXY_MeshDynTri2D
 from .c_core import cppJArray_MeshPsup, quality_meshTri2D
 from .c_core import copyMeshDynTri2D

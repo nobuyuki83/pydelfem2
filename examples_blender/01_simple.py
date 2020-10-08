@@ -9,5 +9,5 @@ def main():
     bpy.ops.render.render()
     bpy.data.images['Render Result'].save_render(filepath = os.path.dirname(__file__)+'/out/01_out.png')
 
-if __name__ == "__main__":    
-	main()   
+if __name__ == "__main__":
+    main()

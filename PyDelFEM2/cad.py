@@ -21,13 +21,14 @@ from .c_core import \
   meshhex3d_subdiv,\
   meshdyntri2d_initialize
 from .c_core import meshtri3d_read_ply, meshtri3d_read_obj, meshtri3d_read_nastran, meshtri3d_write_obj
-from .c_core import mvc
 from .c_core import setXY_MeshDynTri2D
 from .c_core import cad_getPointsEdge, cppJArray_MeshPsup, quality_meshTri2D
 from .c_core import copyMeshDynTri2D
 from .c_core import setTopology_ExtrudeTri2Tet
 from .c_core import cppNormalVtx_Mesh, cppEdge_Mesh
 '''
+
+from .c_core import cppMvc
 from .c_core import numpyXYTri_MeshDynTri2D
 
 from .msh import MeshDynTri2D
@@ -160,7 +161,7 @@ class CadMesh2D(Cad2D):
       npIndPoint_face = self.mesher.points_on_faces([iface],self)
       npPosPoint_face = self.dmsh.np_pos[npIndPoint_face]
       np_xy_bound = numpy.array(self.ccad.xy_vtxctrl_face(iface)).reshape([-1, 2])
-      W = mvc(npPosPoint_face, np_xy_bound)
+      W = cppMvc(npPosPoint_face, np_xy_bound)
       assert W.shape[0] == npPosPoint_face.shape[0]
       assert W.shape[1] == np_xy_bound.shape[0]
       self.listW.append( [npIndPoint_face,W] )

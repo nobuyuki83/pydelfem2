@@ -23,8 +23,8 @@ void PySetTopology_ExtrudeTri2Tet(
     int nXY,
     const py::array_t<unsigned int>& npTri)
 {
-  assert( CheckNumpyArray2D(npTet, -1, 4) );
-  assert( CheckNumpyArray2D(npTri, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(npTet, -1, 4) );
+  assert( dfm2::CheckNumpyArray2D(npTri, -1, 3) );
   dfm2::SetTopology_ExtrudeTri2Tet((unsigned int*)(npTet.request().ptr),
       nXY,
       npTri.data(), npTri.shape()[0],
@@ -69,8 +69,8 @@ PyMeshTri3D_WriteObj(
     const py::array_t<double>& aXYZ,
     const py::array_t<unsigned int>& aTri)
 {
-  assert( CheckNumpyArray2D(aXYZ, -1, 3) );
-  assert( CheckNumpyArray2D(aTri, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(aXYZ, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(aTri, -1, 3) );
   delfem2::Write_Obj(fname,
             aXYZ.data(), aXYZ.shape()[0],
             aTri.data(), aTri.shape()[0]);
@@ -99,8 +99,8 @@ PyMeshQuad3D_Subviv(
     const py::array_t<double>& aXYZ0,
     const py::array_t<unsigned int>& aQuad0)
 {
-  assert( CheckNumpyArray2D(aXYZ0, -1, 3) );
-  assert( CheckNumpyArray2D(aQuad0, -1, 4) );
+  assert( dfm2::CheckNumpyArray2D(aXYZ0, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(aQuad0, -1, 4) );
   std::vector<unsigned int> aQuad1;
   std::vector<unsigned int> psupIndQuad0, psupQuad0;
   std::vector<int> aEdgeFace0;
@@ -126,8 +126,8 @@ PyMeshHex3D_Subviv(
     const py::array_t<double>& aXYZ0,
     const py::array_t<unsigned int>& aHex0)
 {
-  assert( CheckNumpyArray2D(aXYZ0, -1, 3) );
-  assert( CheckNumpyArray2D(aHex0, -1, 8) );
+  assert( dfm2::CheckNumpyArray2D(aXYZ0, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(aHex0, -1, 8) );
   std::vector<unsigned int> aHex1;
   std::vector<unsigned int> psupIndHex0, psupHex0;
   std::vector<unsigned int> aQuadHex0;
@@ -211,7 +211,7 @@ PyJArray_Sort(
     const py::array_t<unsigned int>& psup_ind,
     py::array_t<unsigned int>& psup)
 {
-  assert( CheckJArray(psup_ind,psup) );
+  assert( dfm2::CheckJArray(psup_ind,psup) );
   dfm2::JArray_Sort(psup_ind.data(), psup_ind.shape(0)-1, psup.mutable_data() );
 }
 
@@ -223,7 +223,7 @@ PyJArray_Extend(
     const py::array_t<unsigned int>& psup_ind,
     const py::array_t<unsigned int>& psup)
 {
-  assert( CheckJArray(psup_ind,psup) );
+  assert( dfm2::CheckJArray(psup_ind,psup) );
   std::vector<unsigned int> psup_ind1, psup1;
   dfm2::JArray_Extend(
       psup_ind1, psup1,
@@ -254,7 +254,7 @@ PyElemQuad_DihedralTri(
     const py::array_t<unsigned int>& aTri,
     int np)
 {
-  assert( CheckNumpyArray2D(aTri, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(aTri, -1, 3) );
   const unsigned int nTri = aTri.shape()[0];
   std::vector<unsigned int> aQuad;
   dfm2::ElemQuad_DihedralTri(aQuad, aTri.data(), nTri, np);
@@ -267,8 +267,8 @@ PyQuality_MeshTri2D(
     const py::array_t<double>& np_xy,
     const py::array_t<unsigned int>& np_tri)
 {
-  assert( CheckNumpyArray2D(np_xy, -1, 2) );
-  assert( CheckNumpyArray2D(np_tri, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(np_xy, -1, 2) );
+  assert( dfm2::CheckNumpyArray2D(np_tri, -1, 3) );
   double max_aspect;
   double min_area;
   dfm2::Quality_MeshTri2D(max_aspect, min_area,
@@ -282,7 +282,7 @@ PyMassPoint_MeshTri(
     py::array_t<double>& npXY,
     py::array_t<unsigned int>& npTri)
 {
-  assert( CheckNumpyArray2D(npTri, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(npTri, -1, 3) );
   assert( npXY.ndim() == 2 );
   const unsigned int np = npXY.shape()[0];
   py::array_t<double> npMass(np);
@@ -307,9 +307,9 @@ PyNormalVtx_Mesh(
     const py::array_t<unsigned int>& elm,
     const dfm2::MESHELEM_TYPE type)
 {
-  assert( CheckNumpyArray2D(pos, -1, 3) );
-  assert( CheckNumpyArray2D(elm, -1, 3) );
-  assert( CheckNumpyArray2D(nrm, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(pos, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(elm, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(nrm, -1, 3) );
   assert( nrm.shape()[0] == pos.shape()[0] );
   if( type == dfm2::MESHELEM_TRI ){
     delfem2::Normal_MeshTri3D((double*)(nrm.request().ptr),
@@ -324,8 +324,8 @@ PyEdge_Mesh(
     const py::array_t<unsigned int>& elm,
     const dfm2::MESHELEM_TYPE type)
 {
-  assert( CheckNumpyArray2D(pos, -1, pos.shape()[1]) );
-  assert( CheckNumpyArray2D(elm, -1, nNodeElem(type)) );
+  assert( dfm2::CheckNumpyArray2D(pos, -1, pos.shape()[1]) );
+  assert( dfm2::CheckNumpyArray2D(elm, -1, nNodeElem(type)) );
   std::vector<unsigned int> elsup_ind, elsup;
   dfm2::JArray_ElSuP_MeshElem(elsup_ind, elsup,
                               elm.data(), elm.shape()[0], elm.shape()[1], pos.shape()[0]);

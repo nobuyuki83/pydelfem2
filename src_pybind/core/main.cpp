@@ -113,14 +113,14 @@ py::array_t<double> PyMVC
 (const py::array_t<double>& XY,
  const py::array_t<double>& XY_bound)
 {
-  assert( CheckNumpyArray2D(XY, -1, 2) );
-  assert( CheckNumpyArray2D(XY_bound, -1, 2) );
+  assert( dfm2::CheckNumpyArray2D(XY, -1, 2) );
+  assert( dfm2::CheckNumpyArray2D(XY_bound, -1, 2) );
   const int np = XY.shape()[0];
   const int npb = XY_bound.shape()[0];
   py::array_t<double> aW({np,npb});
-  auto buff_w = aW.request();
+  double* paW = aW.mutable_data();
   for(int ip=0;ip<np;++ip){
-    dfm2::MeanValueCoordinate2D((double*)buff_w.ptr+ip*npb,
+    dfm2::MeanValueCoordinate2D(paW+ip*npb,
                                 XY.at(ip,0), XY.at(ip,1),
                                 XY_bound.data(), npb);
   }
@@ -199,11 +199,11 @@ void PyUpdateRigSkin
  const py::array_t<double>& npRigWeight,
  const py::array_t<unsigned int>& npRigJoint)
 {
-  assert( CheckNumpyArray2D(npXYZ, -1, 3) );
-  assert( CheckNumpyArray2D(npXYZ0, -1, 3) );
-  assert( CheckNumpyArray2D(npTri, -1, 3) );
-  assert( CheckNumpyArray2D(npRigWeight, -1, 4) );
-  assert( CheckNumpyArray2D(npRigJoint, -1, 4) );
+  assert( dfm2::CheckNumpyArray2D(npXYZ, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(npXYZ0, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(npTri, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(npRigWeight, -1, 4) );
+  assert( dfm2::CheckNumpyArray2D(npRigJoint, -1, 4) );
   assert( npXYZ.shape()[0] == npXYZ0.shape()[0] );
   assert( npXYZ.shape()[0] == npRigWeight.shape()[0] );
   assert( npXYZ.shape()[0] == npRigJoint.shape()[0] );
@@ -219,11 +219,11 @@ void PyUpdateRigSkin
 // Rigging related ends here
 // -----------------------------------------
 
-void PyCad2D_ImportSVG
- (dfm2::CCad2D& cad,
-  const std::string& path_svg,
-  double scale_x,
-  double scale_y)
+void PyCad2D_ImportSVG(
+    dfm2::CCad2D& cad,
+    const std::string& path_svg,
+    double scale_x,
+    double scale_y)
 {
   std::vector< std::vector<dfm2::CCad2D_EdgeGeo> > aaEdge;
   ReadSVG_LoopEdgeCCad2D(aaEdge,
@@ -239,14 +239,14 @@ void PyCad2D_ImportSVG
 }
 
 
-void PyIsoSurfaceToSVG
- (const py::array_t<double>& npXY,
-  const py::array_t<unsigned int>& npTri,
-  const py::array_t<double>& npVal,
-  double scale)
+void PyIsoSurfaceToSVG(
+    const py::array_t<double>& npXY,
+    const py::array_t<unsigned int>& npTri,
+    const py::array_t<double>& npVal,
+    double scale)
 {
-  assert( CheckNumpyArray2D(npXY, -1, 2) );
-  assert( CheckNumpyArray2D(npTri, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(npXY, -1, 2) );
+  assert( dfm2::CheckNumpyArray2D(npTri, -1, 3) );
   assert( npVal.ndim() == 1 );
   assert( npVal.size() == npXY.shape()[0] );
   assert( npVal.strides()[0] == sizeof(double) );
@@ -401,7 +401,7 @@ PYBIND11_MODULE(c_core, m) {
   .def("set_key",       &dfm2::CMathExpressionEvaluator::SetKey)
   .def("eval",          &dfm2::CMathExpressionEvaluator::Eval);
   
-  m.def("mvc",              &PyMVC);
+  m.def("cppMvc",              &PyMVC);
   m.def("rotmat3_cartesian", &PyRotMat3_Cartesian);
   
   m.def("isoline_svg", &PyIsoSurfaceToSVG);

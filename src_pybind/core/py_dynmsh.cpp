@@ -27,8 +27,8 @@ PyMeshDynTri3D_Initialize(
     const py::array_t<double>& po,
     const py::array_t<unsigned int>& tri)
 {
-  assert( CheckNumpyArray2D(po, -1, -1) ); // 2d or 3d
-  assert( CheckNumpyArray2D(tri, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(po, -1, -1) ); // 2d or 3d
+  assert( dfm2::CheckNumpyArray2D(tri, -1, 3) );
   mesh.Initialize(po.data(), po.shape()[0], po.shape()[1],
                   tri.data(), tri.shape()[0]);
 }
@@ -39,8 +39,8 @@ PyMeshDynTri2D_Initialize(
     const py::array_t<double>& po,
     const py::array_t<unsigned int>& tri)
 {
-  assert( CheckNumpyArray2D(po, -1, 2) );
-  assert( CheckNumpyArray2D(tri, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(po, -1, 2) );
+  assert( dfm2::CheckNumpyArray2D(tri, -1, 3) );
   mesh.Initialize(po.data(), po.shape()[0],
                   tri.data(), tri.shape()[0]);
 }
@@ -50,7 +50,7 @@ PySetXY_MeshDynTri2D(
     dfm2::CMeshDynTri2D& mesh,
     const py::array_t<double>& npXY)
 {
-  assert( CheckNumpyArray2D(npXY, -1, 2) );
+  assert( dfm2::CheckNumpyArray2D(npXY, -1, 2) );
   assert(npXY.shape()[1]==2);
   mesh.setXY(npXY.data(), npXY.shape()[0]);
 }
@@ -61,8 +61,8 @@ PyCopyMeshDynTri2D(
     py::array_t<unsigned int>& npElm,
     const dfm2::CMeshDynTri2D& mesh)
 {
-  assert( CheckNumpyArray2D(npPos, -1, 2) );
-  assert( CheckNumpyArray2D(npElm, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(npPos, -1, 2) );
+  assert( dfm2::CheckNumpyArray2D(npElm, -1, 3) );
   const unsigned int np = mesh.aEPo.size();
   const unsigned int ntri = mesh.aETri.size();
   assert(npPos.shape()[0]==np);

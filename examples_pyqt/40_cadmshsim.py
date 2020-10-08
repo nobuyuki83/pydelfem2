@@ -14,7 +14,7 @@ from PySide2.QtWidgets import QVBoxLayout, QHBoxLayout, QCheckBox, QButtonGroup,
 import PyDelFEM2 as dfm2
 import PyDelFEM2.gl
 import PyDelFEM2.qt
-import PyDelFEM2.cadmshsimvis
+import PyDelFEM2.gl.cadmshsimvis
 
 
 class Window_Poisson(dfm2.qt.QW_CadMshFem):
@@ -22,7 +22,7 @@ class Window_Poisson(dfm2.qt.QW_CadMshFem):
     super(Window_Poisson, self).__init__()
     self.setWindowTitle("CAD_Mesh_Poisson")
 
-    self.cadmsh = dfm2.cadmshsimvis.CadMesh2D_FEMPoisson(edge_length=0.05)
+    self.cadmsh = dfm2.gl.cadmshsimvis.CadMesh2D_FEMPoisson(edge_length=0.05)
     self.cadmsh.add_polygon([-1, -1, +1, -1, +1, +1, -1, +1])
     self.cadmsh.remesh()
 
@@ -35,7 +35,7 @@ class Window_Diffuse(dfm2.qt.QW_CadMshFem):
   def __init__(self):
     super(Window_Diffuse, self).__init__()
 
-    self.cadmsh = dfm2.cadmshsimvis.CadMesh2D_FEMDiffuse(edge_length=0.05)
+    self.cadmsh = dfm2.gl.cadmshsimvis.CadMesh2D_FEMDiffuse(edge_length=0.05)
     self.cadmsh.add_polygon([-1, -1, +1, -1, +1, +1, -1, +1])
     self.cadmsh.remesh()
 
@@ -52,7 +52,7 @@ class Window_SolidLinearStatic(dfm2.qt.QW_CadMshFem):
 
     self.setWindowTitle("CAD_Mesh_SolidLinearStatic")
 
-    self.cadmsh = dfm2.cadmshsimvis.CadMesh2D_FEMSolidLinearStatic(edge_length=0.05)
+    self.cadmsh = dfm2.gl.cadmshsimvis.CadMesh2D_FEMSolidLinearStatic(edge_length=0.05)
     self.cadmsh.fem.param_gravity_y = -0.1
     self.cadmsh.add_polygon([-1, -1, +1, -1, +1, +1, -1, +1])
     self.cadmsh.remesh()
@@ -67,7 +67,7 @@ class Window_SolidLinearEigen(dfm2.qt.QW_CadMshFem):
     super(Window_SolidLinearEigen, self).__init__()
     self.setWindowTitle("CAD_Mesh_SolidLinearEigen")
 
-    self.cadmsh = dfm2.cadmshsimvis.CadMesh2D_FEMSolidLinearEigen(edge_length=0.05)
+    self.cadmsh = dfm2.gl.cadmshsimvis.CadMesh2D_FEMSolidLinearEigen(edge_length=0.05)
     self.cadmsh.add_polygon([-1, -0.2, +1, -0.2, +1, +0.2, -1, +0.2])
     self.cadmsh.remesh()
 
@@ -82,7 +82,7 @@ class Window_Pbd2D(dfm2.qt.QW_CadMshFem):
 
     self.setWindowTitle("CAD_Mesh_Pbd2d")
 
-    self.cadmsh = dfm2.cadmshsimvis.CadMesh2D_PBD(edge_length=0.1)
+    self.cadmsh = dfm2.gl.cadmshsimvis.CadMesh2D_PBD(edge_length=0.1)
     self.cadmsh.add_polygon([-1, -1, +1, -1, +1, +1, -1, +1])
     self.cadmsh.remesh()
 
@@ -97,7 +97,7 @@ class Window_PbdCloth(dfm2.qt.QW_CadMshFem):
 
     self.setWindowTitle("CAD_Mesh_Pbd2d")
 
-    self.cadmsh = dfm2.cadmshsimvis.CadMesh2D_PBDCloth(edge_length=0.1)
+    self.cadmsh = dfm2.gl.cadmshsimvis.CadMesh2D_PBDCloth(edge_length=0.1)
     self.cadmsh.add_polygon([-1, -1, +1, -1, +1, +1, +0.8,+1, -0.8,+1, -1, +1])
     self.cadmsh.listIndEdge_Fix = [2,4]
     self.cadmsh.remesh()

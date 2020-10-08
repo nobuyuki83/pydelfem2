@@ -87,7 +87,7 @@ void PyProjectPointOutsideSDF
 (py::array_t<double>& npXYZt,
  const std::vector<const dfm2::CSDF3*>& apSDF)
 {
-  assert( CheckNumpyArray2D(npXYZt, -1, 3) );
+  assert( dfm2::CheckNumpyArray2D(npXYZt, -1, 3) );
   const unsigned int np = npXYZt.shape()[0];
   double* pXYZt = (double*)(npXYZt.request().ptr);
   for(unsigned int ip=0;ip<np;++ip){
@@ -132,10 +132,10 @@ public:
                const py::array_t<double>& npNorm,
                double rad_explore)
   {
-    assert( CheckNumpyArray2D(npXYZ, -1, 3) );
-    assert( CheckNumpyArray2D(npTri, -1, 3) );
-    assert( CheckNumpyArray2D(npNorm, -1, 3) );
-    assert( CheckNumpyArray2D(npXYZt, -1, 3) );
+    assert( dfm2::CheckNumpyArray2D(npXYZ, -1, 3) );
+    assert( dfm2::CheckNumpyArray2D(npTri, -1, 3) );
+    assert( dfm2::CheckNumpyArray2D(npNorm, -1, 3) );
+    assert( dfm2::CheckNumpyArray2D(npXYZt, -1, 3) );
     assert( npXYZ.shape()[0] == npNorm.shape()[0] );
     assert( aInfoNearest.empty() || (int)aInfoNearest.size() == npXYZt.shape()[0] );
     double* pXYZt = (double*)(npXYZt.request().ptr);
