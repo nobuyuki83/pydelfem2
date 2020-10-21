@@ -40,6 +40,7 @@ void init_dynmsh(py::module &m);
 void init_primitive(py::module &m);
 void init_field(py::module &m);
 void init_fem(py::module &m);
+void init_ls(py::module &m);
 void init_sdf(py::module &m);
 
 // ---------------------------------
@@ -289,6 +290,7 @@ PYBIND11_MODULE(c_core, m) {
   init_fem(m);
   init_sdf(m);
   init_dynmsh(m);
+  init_ls(m);
 //  init_rigidbody(m);
   
   // ----------------------

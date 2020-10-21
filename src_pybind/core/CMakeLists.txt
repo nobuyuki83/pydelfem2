@@ -36,9 +36,12 @@ include_directories(
 )
 
 set(INPUT_SRC
-    ${DELFEM2_INC}/evalmathexp.h        ${DELFEM2_INC}/evalmathexp.cpp
-    ${DELFEM2_INC}/mshtopoio.h          ${DELFEM2_INC}/mshtopoio.cpp
-    ../../delfem2/3rd_party/io_gltf.h   ../../delfem2/3rd_party/io_gltf.cpp
+    ${DELFEM2_INC}/evalmathexp.h        
+    ${DELFEM2_INC}/evalmathexp.cpp
+    ${DELFEM2_INC}/mshtopoio.h          
+    ${DELFEM2_INC}/mshtopoio.cpp
+    ../../delfem2/3rd_party/io_gltf.h   
+    ../../delfem2/3rd_party/io_gltf.cpp
     
     ../py_funcs.h
 
@@ -48,6 +51,7 @@ set(INPUT_SRC
     py_polyline.cpp
     py_field.cpp
     py_fem.cpp
+    py_ls.cpp    
     py_sdf.cpp
 
     main.cpp
