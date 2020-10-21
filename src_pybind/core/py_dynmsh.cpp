@@ -68,14 +68,14 @@ PyCopyMeshDynTri2D(
   assert(npPos.shape()[0]==np);
   assert(npElm.shape()[0]==ntri);
   {
-    double* pP = (double*)(npPos.request().ptr);
+    double* pP = npPos.mutable_data();
     for(unsigned int ip=0;ip<np;++ip){
       pP[ip*2+0] = mesh.aVec2[ip].x();
       pP[ip*2+1] = mesh.aVec2[ip].y();
     }
   }
   {
-    unsigned int* pT = (unsigned int*)(npElm.request().ptr);
+    unsigned int* pT = npElm.mutable_data();
     for(unsigned int it=0;it<ntri;++it){
       pT[it*3+0] = mesh.aETri[it].v[0];
       pT[it*3+1] = mesh.aETri[it].v[1];
@@ -153,8 +153,7 @@ PyMapValue(
   assert( npV.ndim() == 2 );
   const int np = npV.shape()[0];
   const int ndim = npV.shape()[1];
-  double* pV = (double*)(npV.request().ptr);
-  mpr.Interpolate(pV, np, ndim);
+  mpr.Interpolate(npV.mutable_data(), np, ndim);
 }
 
 // --------------------------------------

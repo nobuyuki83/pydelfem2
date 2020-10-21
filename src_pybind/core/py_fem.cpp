@@ -356,45 +356,43 @@ void PyPBD_ConstProj_Rigid2D
                               npXY.data(),       npXY.shape()[0]);
 }
 
-
-void PyConstProj_Rigid3D
-    (py::array_t<double>& npXYZt,
-     double stiffness,
-     const py::array_t<int>& npClstrInd,
-     const py::array_t<int>& npClstr,
-     const py::array_t<double>& npXYZ)
+void PyConstProj_Rigid3D(
+    py::array_t<double>& npXYZt,
+    double stiffness,
+    const py::array_t<int>& npClstrInd,
+    const py::array_t<int>& npClstr,
+    const py::array_t<double>& npXYZ)
 {
-  dfm2::PBD_ConstProj_Rigid3D((double*)(npXYZt.request().ptr),
-                              stiffness,
-                              npClstrInd.data(), npClstrInd.size(),
-                              npClstr.data(),    npClstr.size(),
-                              npXYZ.data(),      npXYZ.shape()[0]);
+  assert( dfm2::CheckNumpyArray2D(npXYZt,-1,3) );
+  dfm2::PBD_ConstProj_Rigid3D(npXYZt.mutable_data(),
+      stiffness,
+      npClstrInd.data(), npClstrInd.size(),
+      npClstr.data(),    npClstr.size(),
+      npXYZ.data(),      npXYZ.shape()[0]);
 }
 
 void PyPBD_ConstProj_ClothStretch
     (py::array_t<double>& npXYZt,
      const dfm2::CMeshDynTri2D& mesh)
 {
-  double* aXYZt = (double*)(npXYZt.request().ptr);
+  assert( dfm2::CheckNumpyArray2D(npXYZt,-1,3) );
   const std::vector<dfm2::CDynTri>& aETri = mesh.aETri;
   const std::vector<dfm2::CVec2d>& aVec2 = mesh.aVec2;
-  PBD_TriStrain(aXYZt,
-                npXYZt.shape()[0], aETri, aVec2);
+  PBD_TriStrain(npXYZt.mutable_data(),
+      npXYZt.shape()[0], aETri, aVec2);
 }
 
 void PyPBD_ConstProj_ClothBend
     (py::array_t<double>& npXYZt,
      const dfm2::CMeshDynTri2D& mesh)
 {
-  assert( npXYZt.ndim() == 2 );
-  assert( npXYZt.shape()[1] == 3 );
+  assert( dfm2::CheckNumpyArray2D(npXYZt,-1,3) );
   const std::vector<dfm2::CDynTri>& aETri = mesh.aETri;
   const std::vector<dfm2::CVec2d>& aVec2 = mesh.aVec2;
-  double* aXYZt = (double*)(npXYZt.request().ptr);
-  PBD_Bend(aXYZt,
-           npXYZt.shape()[0],
-           aETri, aVec2,
-           1.0);
+  PBD_Bend(npXYZt.mutable_data(),
+      npXYZt.shape()[0],
+      aETri, aVec2,
+      1.0);
 }
 
 
@@ -404,11 +402,10 @@ void PyPBD_ConstProj_Seam
 {
   assert( dfm2::CheckNumpyArray2D(npXYZt, -1, 3) );
   assert( dfm2::CheckNumpyArray2D(npLine, -1, 2) );
-  double* aXYZt = (double*)(npXYZt.request().ptr);
   const unsigned int nline = npLine.shape()[0];
-  dfm2::PBD_Seam(aXYZt,
-                 npXYZt.shape()[0],
-                 npLine.data(), nline);
+  dfm2::PBD_Seam(npXYZt.mutable_data(),
+      npXYZt.shape()[0],
+      npLine.data(), nline);
 }
 
 void PyPBD_ConstProj_Contact
@@ -416,8 +413,8 @@ void PyPBD_ConstProj_Contact
      const dfm2::CSDF3& sdf)
 {
   assert( dfm2::CheckNumpyArray2D(npXYZt, -1, 3) );
-  double* aXYZt = (double*)(npXYZt.request().ptr);
-  unsigned int np = npXYZt.shape()[0];
+  double* aXYZt = npXYZt.mutable_data();
+  const unsigned int np = npXYZt.shape()[0];
   for(unsigned int ip=0;ip<np;++ip){
     double n[3];
     double dist = sdf.Projection(n,
@@ -442,7 +439,7 @@ void PyPointFixBC
   assert( npXY1.ndim() == 2 );
   assert( aTmp.shape()[1] == npXY1.shape()[1] );
   const int np = aTmp.shape()[0];
-  double* ptr = (double*)(aTmp.request().ptr);
+  double* ptr = aTmp.mutable_data();
   if( npXY1.shape()[1] == 2 ){
     for(int ip=0;ip<np;++ip){
       if( aBC.at(ip) == 0 ){ continue; }
@@ -475,7 +472,7 @@ void PyMassPointMesh
   assert( dfm2::CheckNumpyArray2D(np_elm, -1, nNodeElem(elem_type)) );
   if( elem_type ==  dfm2::MESHELEM_TET ){
     assert( dfm2::CheckNumpyArray2D(np_pos, -1, 3) );
-    dfm2::MassPoint_Tet3D((double*)(mass_point.request().ptr),
+    dfm2::MassPoint_Tet3D(mass_point.mutable_data(),
                           rho,
                           np_pos.data(), np_pos.shape()[0],
                           np_elm.data(), np_elm.shape()[0]);
@@ -483,7 +480,7 @@ void PyMassPointMesh
   else if( elem_type ==  dfm2::MESHELEM_TRI ){
     if( np_pos.shape()[1] == 2 ){ // two dimensional
       assert( dfm2::CheckNumpyArray2D(np_pos, -1, 2) );
-      dfm2::MassPoint_Tri2D((double*)(mass_point.request().ptr),
+      dfm2::MassPoint_Tri2D(mass_point.mutable_data(),
                             rho,
                             np_pos.data(), np_pos.shape()[0],
                             np_elm.data(), np_elm.shape()[0]);
@@ -508,11 +505,10 @@ void PyMassLumped_ShellPlateBendingMitc3
   assert( dfm2::CheckNumpyArray2D(np_pos, -1, 2) );
   assert( dfm2::CheckNumpyArray2D(np_elm, -1, 3) );
   assert( mass_lumped.shape()[0] == np_pos.shape()[0] );
-  double* aM = (double*)(mass_lumped.request().ptr);
-  dfm2::MassLumped_ShellPlateBendingMITC3(aM,
-                                          rho, thick,
-                                          np_pos.data(), np_pos.shape()[0],
-                                          np_elm.data(), np_elm.shape()[0]);
+  dfm2::MassLumped_ShellPlateBendingMITC3(mass_lumped.mutable_data(),
+      rho, thick,
+      np_pos.data(), np_pos.shape()[0],
+      np_elm.data(), np_elm.shape()[0]);
 }
 
 void init_fem(py::module &m)

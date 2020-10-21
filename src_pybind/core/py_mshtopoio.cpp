@@ -25,7 +25,7 @@ void PySetTopology_ExtrudeTri2Tet(
 {
   assert( dfm2::CheckNumpyArray2D(npTet, -1, 4) );
   assert( dfm2::CheckNumpyArray2D(npTri, -1, 3) );
-  dfm2::SetTopology_ExtrudeTri2Tet((unsigned int*)(npTet.request().ptr),
+  dfm2::SetTopology_ExtrudeTri2Tet(npTet.mutable_data(),
       nXY,
       npTri.data(), npTri.shape()[0],
       nlayer);
@@ -286,14 +286,13 @@ PyMassPoint_MeshTri(
   assert( npXY.ndim() == 2 );
   const unsigned int np = npXY.shape()[0];
   py::array_t<double> npMass(np);
-  double* paMass = (double*)npMass.request(true).ptr;
   if( npXY.shape()[1] == 2 ) {
-    dfm2::MassPoint_Tri2D(paMass, 1.0,
+    dfm2::MassPoint_Tri2D(npMass.mutable_data(), 1.0,
                           npXY.data(), npXY.shape()[0],
                           npTri.data(), npTri.shape()[0]);
   }
   else if( npXY.shape()[1] == 3 ) {
-    dfm2::MassPoint_Tri3D(paMass, 1.0,
+    dfm2::MassPoint_Tri3D(npMass.mutable_data(), 1.0,
                           npXY.data(), npXY.shape()[0],
                           npTri.data(), npTri.shape()[0]);
   }
@@ -302,17 +301,17 @@ PyMassPoint_MeshTri(
 
 void
 PyNormalVtx_Mesh(
-    py::array_t<double>& nrm,
+    py::array_t<double>& npNrm,
     const py::array_t<double>& pos,
     const py::array_t<unsigned int>& elm,
     const dfm2::MESHELEM_TYPE type)
 {
   assert( dfm2::CheckNumpyArray2D(pos, -1, 3) );
   assert( dfm2::CheckNumpyArray2D(elm, -1, 3) );
-  assert( dfm2::CheckNumpyArray2D(nrm, -1, 3) );
-  assert( nrm.shape()[0] == pos.shape()[0] );
+  assert( dfm2::CheckNumpyArray2D(npNrm, -1, 3) );
+  assert( npNrm.shape()[0] == pos.shape()[0] );
   if( type == dfm2::MESHELEM_TRI ){
-    delfem2::Normal_MeshTri3D((double*)(nrm.request().ptr),
+    delfem2::Normal_MeshTri3D(npNrm.mutable_data(),
                               pos.data(),pos.shape()[0],
                               elm.data(),elm.shape()[0]);
   }
