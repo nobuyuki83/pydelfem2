@@ -22,19 +22,21 @@ set(PROJ_NAME c_core)
 project(${PROJ_NAME})
 
 set(DELFEM2_INCLUDE_DIR "../../delfem2/include")
-set(DELFEM2_INC         "../../delfem2/include/delfem2")
+add_definitions(-DDFM2_HEADER_ONLY=ON)
+
 set(PYBIND11_DIR        "../../pybind11")
 add_subdirectory(${PYBIND11_DIR} pybind11)
 
-add_definitions(-DDFM2_HEADER_ONLY=ON)
 
 ########################
 
 include_directories(
   ${DELFEM2_INCLUDE_DIR}
-  ../../delfem2/3rd_party
+  ../../
+  ../../delfem2/3rd_party/
 )
 
+set(DELFEM2_INC         "../../delfem2/include/delfem2")
 set(INPUT_SRC
     ${DELFEM2_INC}/evalmathexp.h        
     ${DELFEM2_INC}/evalmathexp.cpp

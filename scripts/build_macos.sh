@@ -1,7 +1,7 @@
 #################################
 # download & build submodules
 
-git submodule update --init --recursive
+git submodule update --init 
 git submodule foreach git checkout master
 git submodule foreach git pull origin master
 
