@@ -9,7 +9,7 @@ def main():
 
     myutil.set_tex_environment(
     	bpy.context.scene.world,
-    	'../test_inputs/epping_forest_01_1k.hdr')
+    	os.path.dirname(os.path.abspath(__file__))+'/../test_inputs/epping_forest_01_1k.hdr')
 
     # rotate cube
     bpy.data.objects["Cube"].rotation_euler = _euler = mathutils.Euler((0.0, 0.0, math.radians(30.0)), 'XYZ')

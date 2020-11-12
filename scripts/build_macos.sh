@@ -1,9 +1,12 @@
-#################################
-# download & build submodules
+echo "#################################"
+echo "# download submodules"
 
 git submodule update --init 
 git submodule foreach git checkout master
 git submodule foreach git pull origin master
+
+echo "#####################"
+echo "# build submodule"
 
 PATH_PYTHON=$(which python3)
 echo ${PATH_PYTHON}
@@ -33,3 +36,12 @@ pip3 uninstall PyDelFEM2 -y
 pip3 uninstall PyDelFEM2 -y
 pip3 install -e .
 python3 setup.py test
+
+echo "###################"
+/Applications/blender.app/Contents/MacOS/blender -b -P examples_blender/01_simple.py
+open examples_blender/out/01_out.png
+/Applications/blender.app/Contents/MacOS/blender -b -P examples_blender/02_envtex.py
+
+
+
+

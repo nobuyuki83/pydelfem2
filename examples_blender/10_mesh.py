@@ -10,7 +10,7 @@ def main():
     bpy.data.objects.remove(bpy.data.objects["Cube"])   
 
     dfm2_msh = dfm2.Mesh()
-    dfm2_msh.read("../test_inputs/bunny_2k.ply")
+    dfm2_msh.read(os.path.dirname(os.path.abspath(__file__))+"/../test_inputs/bunny_2k.ply")
     dfm2_msh.normalize(3.0)
 
     bpy_msh = bpy.data.meshes.new(name="cubemesh")
@@ -21,7 +21,7 @@ def main():
 
     myutil.set_tex_environment(
             bpy.context.scene.world,
-            '../test_inputs/epping_forest_01_1k.hdr')
+            os.path.dirname(os.path.abspath(__file__))+'/../test_inputs/epping_forest_01_1k.hdr')
 
     myutil.set_camera_ydirection()
 

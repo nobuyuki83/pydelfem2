@@ -15,3 +15,6 @@ test_py/__pycache__/
 cmake-build-debug
 *.vtk
 *.so
+.DS_Store
+__pycache__
+examples_blender/out/
