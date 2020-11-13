@@ -25,7 +25,9 @@ jobs:
       - name: download dependency
         run: |
           git branch -a
-          git submodule update --init --recursive            
+          git submodule update --init
+          git submodule foreach git checkout master
+          git submodule foreach git pull origin master
 
       - name: build python module
         run: |
@@ -47,20 +49,20 @@ jobs:
           make
           cd ../../../
 
-          python3 -m pip install --upgrade pip setuptools
+          python3 -m pip install -U pip setuptools
           python3 -m pip install -e .
           
       - name: test python module
         run: |
           sudo apt-get install python3-opengl
-          python3 -m pip install pytest
-          python3 -m pip install PyOpenGL
-          python3 -m pip install glfw
-          python3 -m pip install PySide2
+          python3 -m pip install -U pytest
+          python3 -m pip install -U PyOpenGL
+          python3 -m pip install -U glfw
+          python3 -m pip install -U PySide2
           python3 -m pytest -v -s --is_gl=false --ignore=test_py/test_pyqt.py
           
       - name: torch extension
         run: |
           python3 -m pip uninstall torch_delfem2 -y
-          python3 -m pip install torch
+          python3 -m pip install -U torch
           python3 -m pip install -e src_pybind/torch

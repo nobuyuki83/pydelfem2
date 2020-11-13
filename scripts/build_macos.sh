@@ -37,10 +37,6 @@ pip3 uninstall PyDelFEM2 -y
 pip3 install -e .
 python3 setup.py test
 
-echo "###################"
-/Applications/blender.app/Contents/MacOS/blender -b -P examples_blender/01_simple.py
-open examples_blender/out/01_out.png
-/Applications/blender.app/Contents/MacOS/blender -b -P examples_blender/02_envtex.py
 
 
 
