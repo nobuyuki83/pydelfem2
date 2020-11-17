@@ -22,8 +22,16 @@ from ..c_core import \
 from .c_gl import CppGPUSampler, depth_buffer, color_buffer_4float
 from .c_gl import ColorMap
 from .c_gl import get_texture, setSomeLighting, setup_glsl
-from .c_gl import cppDrawEdge_CppMeshDynTri2D, cppDrawEdge_CppMeshDynTri3D, cppDraw_CppCad2D
-from .c_gl import draw_mesh_facenorm, draw_mesh_edge, draw_mesh_facecolor, draw_points_psup
+from .c_gl import \
+  cppDrawEdge_CppMeshDynTri2D, \
+  cppDrawEdge_CppMeshDynTri3D, \
+  cppDraw_CppCad2D
+from .c_gl import \
+  draw_mesh_facenorm, \
+  draw_mesh_edge, \
+  draw_mesh_facecolor, \
+  cppDrawPoints_Psup, \
+  cppDrawPoints_4RotSym
 from .c_gl import cppDrawSphere
 from .c_gl import drawField_colorMap, drawField_disp, drawField_hedgehog
 
@@ -181,6 +189,38 @@ class GLBufferMesh():
     gl.glDrawElements(self.gl_elem_type, self.size_elem, gl.GL_UNSIGNED_INT, None)
     gl.glDisableClientState(gl.GL_VERTEX_ARRAY)
 
+
+class CXYPsup:
+  def __init__(self,axy,psup_ind,psup):
+    self.axy = axy
+    self.psup_ind = psup_ind
+    self.psup = psup
+
+  def draw(self):
+    gl.glDisable(gl.GL_LIGHTING)
+    gl.glLineWidth(1)
+    gl.glColor3d(0,0,0)
+    cppDrawPoints_Psup(self.axy,self.psup_ind,self.psup)
+
+  def minmax_xyz(self):
+    return [numpy.min(self.axy[:, 0]), numpy.max(self.axy[:,0]),
+            numpy.min(self.axy[:, 1]), numpy.max(self.axy[:,1]),
+            0.0, 0.0]
+
+class CXY4RotSym:
+  def __init__(self,axy,adir):
+    self.axy = axy
+    self.adir = adir
+
+  def draw(self):
+    gl.glDisable(gl.GL_LIGHTING)
+    gl.glLineWidth(3)
+    cppDrawPoints_4RotSym(self.axy,self.adir,0.05)
+
+  def minmax_xyz(self):
+    return [numpy.min(self.axy[:, 0]), numpy.max(self.axy[:,0]),
+            numpy.min(self.axy[:, 1]), numpy.max(self.axy[:,1]),
+            0.0, 0.0]
 
 def draw_Mesh(self):
   if self.is_draw_face:

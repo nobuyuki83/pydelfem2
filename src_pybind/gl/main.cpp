@@ -110,15 +110,28 @@ void PyDrawMesh_Edge
   }
 }
 
-void PyDrawPoints_Psup
-    (const py::array_t<double>& pos,
-     const py::array_t<unsigned int>& psup_ind,
-     const py::array_t<unsigned int>& psup)
+void PyDrawPoints_Psup(
+    const py::array_t<double>& pos,
+    const py::array_t<unsigned int>& psup_ind,
+    const py::array_t<unsigned int>& psup)
 {
   if( pos.shape()[1] == 2 ) {
     dfm2::opengl::DrawPoints2d_Psup(pos.shape()[0],pos.data(),psup_ind.data(),psup.data());
   }
 }
+
+void PyDrawPoints_4RotSym(
+    const py::array_t<double>& pos,
+    const py::array_t<double>& dir,
+    double elen)
+{
+  assert( pos.ndim() == 2 && dir.ndim() == 2 && pos.shape()[0] == dir.shape()[0] );
+  if( pos.shape()[1] == 2 ) {
+    assert( dir.shape()[1] == 2 );
+    dfm2::opengl::DrawPoints2d_4RotSym(pos.data(),pos.shape()[0],dir.data(),elen);
+  }
+}
+
 
 
 void DrawField_ColorMap
@@ -232,16 +245,16 @@ PYBIND11_MODULE(c_gl, m) {
   m.def("cppDraw_CppCad2D",            &PyDraw_CCad2D);
   
   
-  m.def("draw_mesh_facenorm",  &PyDrawMesh_FaceNorm);
-  m.def("draw_mesh_edge",      &PyDrawMesh_Edge);
-  m.def("draw_points_psup",    &PyDrawPoints_Psup);
-  m.def("draw_mesh_facecolor", &PyDrawMesh_FaceColor);
+  m.def("draw_mesh_facenorm",    &PyDrawMesh_FaceNorm);
+  m.def("draw_mesh_edge",        &PyDrawMesh_Edge);
+  m.def("cppDrawPoints_Psup",    &PyDrawPoints_Psup);
+  m.def("cppDrawPoints_4RotSym", &PyDrawPoints_4RotSym);
+  m.def("draw_mesh_facecolor",   &PyDrawMesh_FaceColor);
 
   m.def("drawField_colorMap",   &DrawField_ColorMap);
   m.def("drawField_disp",       &DrawField_Disp);
   m.def("drawField_hedgehog",   &DrawField_Hedgehog);
 
-  
   // ----------------
   // gl misc
   m.def("setSomeLighting",  &dfm2::opengl::setSomeLighting, "set some lighting that looks good for me");
