@@ -42,11 +42,9 @@ set(INPUT_SRC
     ${DELFEM2_INC}/evalmathexp.cpp
     ${DELFEM2_INC}/mshtopoio.h          
     ${DELFEM2_INC}/mshtopoio.cpp
-    ../../delfem2/3rd_party/io_gltf.h   
-    ../../delfem2/3rd_party/io_gltf.cpp
-    
+    ${DELFEM2_INC}/tinygltf/io_gltf.h
+    ${DELFEM2_INC}/tinygltf/io_gltf.cpp
     ../py_funcs.h
-
     py_mshtopoio.cpp
     py_dynmsh.cpp
     py_primitive.cpp

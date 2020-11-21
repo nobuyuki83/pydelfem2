@@ -88,6 +88,7 @@ void PyDrawMesh_FaceColor(
   }
 }
 
+
 void PyDrawMesh_Edge
 (const py::array_t<double>& pos,
  const py::array_t<unsigned int>& elm,

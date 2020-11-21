@@ -27,7 +27,7 @@ set(PROJ_NAME c_gl)
 project(${PROJ_NAME})
 
 set(DELFEM2_INCLUDE_DIR "../../delfem2/include")
-set(DELFEM2_INC         "../../delfem2/include/delfem2")
+add_definitions(-DDFM2_HEADER_ONLY=ON)
 
 set(GLAD_DIR "../../delfem2/3rd_party/glad3")
 get_filename_component(GLAD_DIR ${GLAD_DIR} ABSOLUTE)
@@ -35,70 +35,30 @@ get_filename_component(GLAD_DIR ${GLAD_DIR} ABSOLUTE)
 set(PYBIND11_DIR ../../pybind11)
 add_subdirectory(${PYBIND11_DIR} pybind11)
 
-if(NOT USE_HEADERONLY)
-  set(SRC_DFM2
-      ${DELFEM2_INC}/quat.h                    ${DELFEM2_INC}/quat.cpp
-      ${DELFEM2_INC}/vec2.h                    ${DELFEM2_INC}/vec2.cpp
-      ${DELFEM2_INC}/vec3.h                    ${DELFEM2_INC}/vec3.cpp
-      ${DELFEM2_INC}/mat3.h                    ${DELFEM2_INC}/mat3.cpp
-      ${DELFEM2_INC}/mat4.h                    ${DELFEM2_INC}/mat4.cpp
-      ${DELFEM2_INC}/camera.h                  ${DELFEM2_INC}/camera.cpp
-      ${DELFEM2_INC}/color.h                   ${DELFEM2_INC}/color.cpp
-      ${DELFEM2_INC}/mshmisc.h                 ${DELFEM2_INC}/mshmisc.cpp
-      ${DELFEM2_INC}/gridvoxel.h               ${DELFEM2_INC}/gridvoxel.cpp
-      ${DELFEM2_INC}/gridcube.h                ${DELFEM2_INC}/gridcube.cpp
-      ${DELFEM2_INC}/bv.h
- 
-      ${DELFEM2_INC}/geo3_v23m34q.h            ${DELFEM2_INC}/geo3_v23m34q.cpp
- 
-      ${DELFEM2_INC}/opengl/tex_gl.h             ${DELFEM2_INC}/opengl/tex_gl.cpp
-      ${DELFEM2_INC}/opengl/color_glold.h        ${DELFEM2_INC}/opengl/color_glold.cpp
-      ${DELFEM2_INC}/opengl/funcs_glold.h        ${DELFEM2_INC}/opengl/funcs_glold.cpp
-      ${DELFEM2_INC}/opengl/v3q_glold.h          ${DELFEM2_INC}/opengl/v3q_glold.cpp
-      ${DELFEM2_INC}/opengl/v2_glold.h           ${DELFEM2_INC}/opengl/v2_glold.cpp    
-      ${DELFEM2_INC}/opengl/cad2dtriv2_glold.h   ${DELFEM2_INC}/opengl/cad2dtriv2_glold.cpp
-      ${DELFEM2_INC}/opengl/gl_funcs.h           ${DELFEM2_INC}/opengl/gl_funcs.cpp
-      ${DELFEM2_INC}/opengl/r2t_gl.h             ${DELFEM2_INC}/opengl/r2t_gl.cpp
-      ${DELFEM2_INC}/opengl/r2tglo_glold.h       ${DELFEM2_INC}/opengl/r2tglo_glold.cpp
-      ${DELFEM2_INC}/opengl/gridcube_glold.h     ${DELFEM2_INC}/opengl/gridcube_glold.cpp
-      ${DELFEM2_INC}/opengl/caddtri_v3_glold.h   ${DELFEM2_INC}/opengl/caddtri_v3_glold.cpp
-      )
-else()
-  add_definitions(-DDFM2_HEADER_ONLY=ON)
-endif()
+find_package(OpenGL REQUIRED)
+
+################################
 
 set(INPUT_SRC
     ${GLAD_DIR}/include/glad/glad.h     
     ${GLAD_DIR}/src/glad.c
-
-    ${SRC_DFM2}
-
     py_sampler.cpp
     py_texture.cpp
     main.cpp
 )
 
-
-find_package(OpenGL REQUIRED)
-
-set(INPUT_INCLUDE_DIR
-  ${OPENGL_INCLUDE_DIR}
-  ${GLAD_DIR}/include
-  ${DELFEM2_INCLUDE_DIR}
-)
-set(INPUT_LIBRARY
-  ${OPENGL_LIBRARY}
-)
-
 include_directories(
-  ${INPUT_INCLUDE_DIR}
-  ${GLAD_DIR}/include
-  ../../pybind11/include)
+    ${OPENGL_INCLUDE_DIR}
+    ${GLAD_DIR}/include
+    ${DELFEM2_INCLUDE_DIR}
+    ${GLAD_DIR}/include
+    ${PYBIND11_DIR}/include)
+
 pybind11_add_module(${PROJ_NAME}
   ${INPUT_SRC} )
 
-target_link_libraries(${PROJ_NAME}
-  PRIVATE ${INPUT_LIBRARY})
+target_link_libraries(${PROJ_NAME} PRIVATE
+    ${OPENGL_LIBRARY})
 
 file(TO_NATIVE_PATH "${PROJECT_BINARY_DIR}" NATIVE_PROJECT_BINARY_DIR)
 file(TO_NATIVE_PATH "${PROJECT_SOURCE_DIR}" NATIVE_PROJECT_SOURCE_DIR)

@@ -11,8 +11,9 @@
 #include <vector>
 #include <deque>
 
-#include "../py_funcs.h"
-
+#include "delfem2/tinygltf/io_gltf.h"
+#include "delfem2/cad2_dtri2.h"
+#include "delfem2/rig_geo3.h"
 #include "delfem2/mat3.h"
 #include "delfem2/mshtopoio.h"
 #include "delfem2/gridvoxel.h"
@@ -20,11 +21,8 @@
 #include "delfem2/slice.h"
 #include "delfem2/evalmathexp.h"
 
-#include "delfem2/cad2_dtri2.h"
-#include "delfem2/rig_geo3.h"
-
+#include "../py_funcs.h"
 #include "tinygltf/tiny_gltf.h"
-#include "io_gltf.h"
 
 #include "stb_image.h" // stb is already compiled in io_gltf.cpp
 
@@ -59,8 +57,9 @@ py::array_t<unsigned char> PyImRead(const std::string& d)
 // ---------------------------------
 // voxel related
 
-std::tuple<std::vector<double>,std::vector<unsigned int>> PyMeshQuad3D_VoxelGrid
-(const dfm2::CGrid3<int>& vg)
+std::tuple<std::vector<double>,std::vector<unsigned int>>
+PyMeshQuad3D_VoxelGrid(
+    const dfm2::CGrid3<int>& vg)
 {
   std::vector<double> aXYZ;
   std::vector<unsigned int> aQuad;
@@ -70,8 +69,9 @@ std::tuple<std::vector<double>,std::vector<unsigned int>> PyMeshQuad3D_VoxelGrid
   return std::make_tuple(aXYZ,aQuad);
 }
 
-std::tuple<std::vector<double>,std::vector<int>> PyMeshHex3D_VoxelGrid
-(const dfm2::CGrid3<int>& vg)
+std::tuple<std::vector<double>,std::vector<int>>
+PyMeshHex3D_VoxelGrid(
+    const dfm2::CGrid3<int>& vg)
 {
   std::vector<double> aXYZ;
   std::vector<int> aHex;
@@ -84,8 +84,8 @@ std::tuple<std::vector<double>,std::vector<int>> PyMeshHex3D_VoxelGrid
 // -------------------------------------------
 
 std::tuple<py::array_t<double>, py::array_t<unsigned int>>
-NumpyXYTri_MeshDynTri2D
-(dfm2::CMeshDynTri2D& dmesh)
+NumpyXYTri_MeshDynTri2D(
+    dfm2::CMeshDynTri2D& dmesh)
 {
   std::vector<double> aXY;
   std::vector<unsigned int> aTri;
@@ -95,11 +95,11 @@ NumpyXYTri_MeshDynTri2D
   return std::make_tuple(npXY,npTri);
 }
 
-py::array_t<int> PyCad2D_GetPointsEdge
-(const dfm2::CCad2D& cad,
- const std::vector<int>& aIE,
- const py::array_t<double>& aXY,
- double torelance)
+py::array_t<int> PyCad2D_GetPointsEdge(
+    const dfm2::CCad2D& cad,
+    const std::vector<int>& aIE,
+    const py::array_t<double>& aXY,
+    double torelance)
 {
   std::vector<int> aIdP;
   cad.GetPointsEdge(aIdP,
@@ -110,9 +110,9 @@ py::array_t<int> PyCad2D_GetPointsEdge
   return py::array_t<int>((int)aIdP.size(), aIdP.data());
 }
 
-py::array_t<double> PyMVC
-(const py::array_t<double>& XY,
- const py::array_t<double>& XY_bound)
+py::array_t<double> PyMVC(
+    const py::array_t<double>& XY,
+    const py::array_t<double>& XY_bound)
 {
   assert( dfm2::CheckNumpyArray2D(XY, -1, 2) );
   assert( dfm2::CheckNumpyArray2D(XY_bound, -1, 2) );
@@ -128,7 +128,9 @@ py::array_t<double> PyMVC
   return aW;
 }
 
-py::array_t<double> PyRotMat3_Cartesian(const std::vector<double>& d)
+py::array_t<double>
+PyRotMat3_Cartesian(
+    const std::vector<double>& d)
 {
   dfm2::CMat3d m;
   m.SetRotMatrix_Cartesian(d[0], d[1], d[2]);
@@ -145,9 +147,10 @@ py::array_t<double> PyRotMat3_Cartesian(const std::vector<double>& d)
 // Rigging related from here
 
 std::tuple<py::array_t<double>, py::array_t<unsigned int>, py::array_t<double>, py::array_t<unsigned int>>
-PyGLTF_GetMeshInfo
-(const dfm2::CGLTF& gltf,
- int imesh, int iprimitive)
+PyGLTF_GetMeshInfo(
+    const dfm2::CGLTF& gltf,
+    int imesh,
+    int iprimitive)
 {
   std::vector<double> aXYZ0;
   std::vector<unsigned int> aTri;
@@ -192,13 +195,13 @@ PyGLTF_GetBones
   return BA;
 }
 
-void PyUpdateRigSkin
-(py::array_t<double>& npXYZ,
- const py::array_t<double>& npXYZ0,
- const py::array_t<unsigned int>& npTri,
- const CBoneArray& BA,
- const py::array_t<double>& npRigWeight,
- const py::array_t<unsigned int>& npRigJoint)
+void PyUpdateRigSkin(
+    py::array_t<double>& npXYZ,
+    const py::array_t<double>& npXYZ0,
+    const py::array_t<unsigned int>& npTri,
+    const CBoneArray& BA,
+    const py::array_t<double>& npRigWeight,
+    const py::array_t<unsigned int>& npRigJoint)
 {
   assert( dfm2::CheckNumpyArray2D(npXYZ, -1, 3) );
   assert( dfm2::CheckNumpyArray2D(npXYZ0, -1, 3) );

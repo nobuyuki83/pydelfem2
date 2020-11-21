@@ -10,9 +10,9 @@ namespace py = pybind11;
 namespace dfm2 = delfem2;
 
 dfm2::opengl::CTexRGB_Rect2D
-GetTextureFromNumpy
- (const py::array_t<unsigned char>& a,
-  const std::string& str_channels)
+GetTextureFromNumpy(
+    const py::array_t<unsigned char>& a,
+    const std::string& str_channels)
 {
   assert(a.ndim()==3);
   assert(a.shape()[2] == 3);
