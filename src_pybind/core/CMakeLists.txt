@@ -45,11 +45,13 @@ set(INPUT_SRC
     ${DELFEM2_INC}/tinygltf/io_gltf.h
     ${DELFEM2_INC}/tinygltf/io_gltf.cpp
     ../py_funcs.h
+
     py_mshtopoio.cpp
     py_dynmsh.cpp
     py_primitive.cpp
     py_polyline.cpp
     py_field.cpp
+    py_rigging.cpp
     py_fem.cpp
     py_ls.cpp    
     py_sdf.cpp

@@ -1,12 +1,13 @@
 echo "###################"
 echo "# blender"
 
-version_blender=$(/Applications/blender.app/Contents/MacOS/blender --version)
+path_blender=/Applications/blender.app/Contents/MacOS/Blender
+
+version_blender=$(${path_blender} --version)
 version_blender=$(cut -d' ' -f 2 <<< ${version_blender})
 version_blender=${version_blender%.*}
 echo "blender version: ${version_blender}"
 
-path_blender=/Applications/blender.app/Contents/MacOS/Blender
 path_python=$(dirname ${path_blender})/../Resources/${version_blender}/python/bin
 path_python=$(find ${path_python} -maxdepth 1 -type f -name 'python*')
 echo "path python: ${path_python}"
@@ -31,9 +32,11 @@ ${path_python} -m pip install --upgrade pip # upgrade pip
 ${path_python} -m pip install -e . # install delfem2
 
 
-${path_blender} -b -P examples_blender/01_simple.py
+${path_blender} -b -P examples_blender/01_simple.py -- --render
 open examples_blender/out/01_out.png
-${path_blender} -b -P examples_blender/02_envtex.py
+${path_blender} -b -P examples_blender/02_envtex.py -- --render
 open examples_blender/out/02_out.png
-${path_blender} -b -P examples_blender/10_mesh.py
+${path_blender} -b -P examples_blender/03_skin.py -- --render
+open examples_blender/out/03_out.png
+${path_blender} -b -P examples_blender/10_mesh.py -- --render
 open examples_blender/out/10_out.png

@@ -11,11 +11,8 @@
 #include <vector>
 #include <deque>
 
-#include "delfem2/tinygltf/io_gltf.h"
 #include "delfem2/cad2_dtri2.h"
-#include "delfem2/rig_geo3.h"
 #include "delfem2/mat3.h"
-#include "delfem2/mshtopoio.h"
 #include "delfem2/gridvoxel.h"
 #include "delfem2/bv.h"
 #include "delfem2/slice.h"
@@ -40,15 +37,19 @@ void init_field(py::module &m);
 void init_fem(py::module &m);
 void init_ls(py::module &m);
 void init_sdf(py::module &m);
+void init_rigging(py::module &m);
 
 // ---------------------------------
 // img related
 
-py::array_t<unsigned char> PyImRead(const std::string& d)
+py::array_t<unsigned char>
+PyImRead(
+    const std::string& d)
 {
   int width, height, channels;
-  unsigned char *img = stbi_load(d.c_str(),
-                                 &width, &height, &channels, 0);
+  unsigned char *img = stbi_load(
+      d.c_str(),
+      &width, &height, &channels, 0);
   py::array_t<unsigned char> npR({height,width,channels}, img);
   delete[] img;
   return npR;
@@ -143,81 +144,7 @@ PyRotMat3_Cartesian(
   return npR;
 }
 
-// -----------------------------------------------
-// Rigging related from here
 
-std::tuple<py::array_t<double>, py::array_t<unsigned int>, py::array_t<double>, py::array_t<unsigned int>>
-PyGLTF_GetMeshInfo(
-    const dfm2::CGLTF& gltf,
-    int imesh,
-    int iprimitive)
-{
-  std::vector<double> aXYZ0;
-  std::vector<unsigned int> aTri;
-  std::vector<double> aRigWeight;
-  std::vector<unsigned int> aRigJoint;
-  gltf.GetMeshInfo(aXYZ0,aTri,aRigWeight,aRigJoint,
-                   imesh, iprimitive);
-  const unsigned int np = aXYZ0.size()/3;
-  assert( aRigWeight.size() == np*4 );
-  assert( aRigJoint.size() == np*4 );
-  py::array_t<double> npXYZ0({(int)np,3}, aXYZ0.data());
-  py::array_t<unsigned int> npTri({(int)aTri.size()/3,3}, aTri.data());
-  py::array_t<double> npRW({(int)np,4}, aRigWeight.data());
-  py::array_t<unsigned int> npRJ({(int)np,4}, aRigJoint.data());
-  return std::make_tuple(npXYZ0,npTri,npRW,npRJ);
-}
-
-class CBoneArray{
-public:
-  void SetTranslation(int ib, const std::vector<double>& aT){
-    assert(aT.size()==3);
-    aRigBone[ib].SetTranslation(aT[0], aT[1], aT[2]);
-    UpdateBoneRotTrans(aRigBone);
-  }
-  void SetRotationBryant(int ib, const std::vector<double>& aRB){
-    assert(aRB.size()==3);
-    aRigBone[ib].SetRotationBryant(aRB[0], aRB[1], aRB[2]);
-    UpdateBoneRotTrans(aRigBone);
-  }
-public:
-  std::vector<dfm2::CRigBone> aRigBone;
-};
-
-CBoneArray
-PyGLTF_GetBones
-(const dfm2::CGLTF& gltf,
- int iskin)
-{
-  CBoneArray BA;
-  gltf.GetBone(BA.aRigBone,
-               iskin);
-  return BA;
-}
-
-void PyUpdateRigSkin(
-    py::array_t<double>& npXYZ,
-    const py::array_t<double>& npXYZ0,
-    const py::array_t<unsigned int>& npTri,
-    const CBoneArray& BA,
-    const py::array_t<double>& npRigWeight,
-    const py::array_t<unsigned int>& npRigJoint)
-{
-  assert( dfm2::CheckNumpyArray2D(npXYZ, -1, 3) );
-  assert( dfm2::CheckNumpyArray2D(npXYZ0, -1, 3) );
-  assert( dfm2::CheckNumpyArray2D(npTri, -1, 3) );
-  assert( dfm2::CheckNumpyArray2D(npRigWeight, -1, 4) );
-  assert( dfm2::CheckNumpyArray2D(npRigJoint, -1, 4) );
-  assert( npXYZ.shape()[0] == npXYZ0.shape()[0] );
-  assert( npXYZ.shape()[0] == npRigWeight.shape()[0] );
-  assert( npXYZ.shape()[0] == npRigJoint.shape()[0] );
-  dfm2::Skinning_LBS_LocalWeight(npXYZ.mutable_data(),
-                                 npXYZ0.data(), npXYZ0.shape()[0],
-                                 npTri.data(), npTri.shape()[0],
-                                 BA.aRigBone,
-                                 npRigWeight.data(),
-                                 npRigJoint.data());
-}
 
 // Rigging related ends here
 // -----------------------------------------
@@ -293,6 +220,7 @@ PYBIND11_MODULE(c_core, m) {
   init_sdf(m);
   init_dynmsh(m);
   init_ls(m);
+  init_rigging(m);
 //  init_rigidbody(m);
   
   // ----------------------
@@ -381,21 +309,6 @@ PYBIND11_MODULE(c_core, m) {
         py::return_value_policy::move);
   
   m.def("numpyXYTri_MeshDynTri2D",&NumpyXYTri_MeshDynTri2D);
-  
-  py::class_<dfm2::CGLTF>(m,"CppGLTF")
-  .def(py::init<>())
-  .def("read", &dfm2::CGLTF::Read)
-  .def("print", &dfm2::CGLTF::Print);
-  
-  py::class_<CBoneArray>(m,"CppBoneArray")
-  .def("set_translation", &CBoneArray::SetTranslation)
-  .def("set_rotation_bryant", &CBoneArray::SetRotationBryant)
-  .def(py::init<>());
-  
-  m.def("CppGLTF_GetMeshInfo",   &PyGLTF_GetMeshInfo);
-  m.def("CppGLTF_GetBones",      &PyGLTF_GetBones);
-  m.def("update_rig_skin",       &PyUpdateRigSkin);
-  m.def("update_bone_transform", &dfm2::UpdateBoneRotTrans);
 
   // ------------------------------------------
 
@@ -403,12 +316,11 @@ PYBIND11_MODULE(c_core, m) {
   .def(py::init<>())
   .def("set_expression",&dfm2::CMathExpressionEvaluator::SetExp)
   .def("set_key",       &dfm2::CMathExpressionEvaluator::SetKey)
-  .def("eval",          &dfm2::CMathExpressionEvaluator::Eval);
+  .def("eval",   &dfm2::CMathExpressionEvaluator::Eval);
   
   m.def("cppMvc",              &PyMVC);
-  m.def("rotmat3_cartesian", &PyRotMat3_Cartesian);
-  
-  m.def("isoline_svg", &PyIsoSurfaceToSVG);
+  m.def("rotmat3_cartesian",   &PyRotMat3_Cartesian);
+  m.def("isoline_svg",         &PyIsoSurfaceToSVG);
 }
 
 
