@@ -18,3 +18,5 @@ cmake-build-debug
 .DS_Store
 __pycache__
 examples_blender/out/
+test_inputs/smpl_model_f.npz
+test_inputs/smpl_model_m.npz
