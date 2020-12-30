@@ -13,10 +13,11 @@
 #include <map>
 #include <deque>
 
-#include "delfem2/bv.h"
-#include "delfem2/bvh.h"
+#include "delfem2/srchbv3aabb.h"
+#include "delfem2/srchbv3sphere.h"
+#include "delfem2/srchbvh.h"
 #include "delfem2/srch_v3bvhmshtopo.h"
-#include "delfem2/primitive.h"
+#include "delfem2/mshprimitive.h"
 #include "delfem2/iss.h"
 
 #include "../py_funcs.h"

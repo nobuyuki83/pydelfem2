@@ -5,19 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include "delfem2/tinygltf/io_gltf.h"
+#include "delfem2/rig_geo3.h"
+#include "../py_funcs.h"
+
+#include "tinygltf/tiny_gltf.h"
+#include "stb_image.h" // stb is already compiled in io_gltf.cpp
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
-
 #include <vector>
 #include <deque>
 
-#include "delfem2/tinygltf/io_gltf.h"
-#include "delfem2/rig_geo3.h"
-
-#include "../py_funcs.h"
-#include "tinygltf/tiny_gltf.h"
-
-#include "stb_image.h" // stb is already compiled in io_gltf.cpp
 
 namespace py = pybind11;
 namespace dfm2 = delfem2;
@@ -47,7 +45,7 @@ PyGLTF_GetMeshInfo(
   return std::make_tuple(npXYZ0,npTri,npRW,npRJ);
 }
 
-class CBoneArray{
+class CSkeleton{
 public:
   void SetTranslation(int ib, const std::vector<double>& aT){
     assert(aT.size()==3);
@@ -56,35 +54,51 @@ public:
   }
   void SetRotationBryant(int ib, const std::vector<double>& aRB){
     assert(aRB.size()==3);
-    aRigBone[ib].SetRotationBryant(aRB[0], aRB[1], aRB[2]);
+    double dq[4]; dfm2::Quat_Bryant(dq,aRB[0],aRB[1],aRB[2]);
+    double q0[4]; dfm2::Copy_Quat(q0, aRigBone[ib].quatRelativeRot);
+    dfm2::QuatQuat(aRigBone[ib].quatRelativeRot,q0,dq);
+//    aRigBone[ib].SetRotationBryant(aRB[0], aRB[1], aRB[2]);
     UpdateBoneRotTrans(aRigBone);
   }
 public:
   std::vector<dfm2::CRigBone> aRigBone;
 };
 
-CBoneArray
-PyGLTF_GetBones
-(const dfm2::CGLTF& gltf,
- int iskin)
+CSkeleton
+PySkeleton_Gltf(
+    const dfm2::CGLTF& gltf,
+    int iskin)
 {
-  CBoneArray BA;
-  gltf.GetBone(BA.aRigBone,
+  CSkeleton bones;
+  gltf.GetBone(bones.aRigBone,
                iskin);
-  return BA;
+  return bones;
+}
+
+CSkeleton
+PyGetSkeleton_BoneTreePos(
+  const py::array_t<unsigned int>& npIdBoneParent,
+  const py::array_t<double>& npJ)
+{
+  assert( npIdBoneParent.ndim() == 1 && npIdBoneParent.strides(0) == sizeof(unsigned int) );
+  assert( dfm2::CheckNumpyArray2D(npJ, -1, 3) );
+  const unsigned int nb = npIdBoneParent.shape()[0];
+  assert( npJ.shape()[0] == nb );
+  CSkeleton skeleton;
+  dfm2::InitBones_JointPosition(skeleton.aRigBone,
+      nb, npIdBoneParent.data(), npJ.data());
+  return skeleton;
 }
 
 void PyUpdateRigSkin(
     py::array_t<double>& npXYZ,
     const py::array_t<double>& npXYZ0,
-    const py::array_t<unsigned int>& npTri,
-    const CBoneArray& BA,
+    const CSkeleton& skeleton,
     const py::array_t<double>& npRigWeight,
     const py::array_t<unsigned int>& npRigJoint)
 {
   assert( dfm2::CheckNumpyArray2D(npXYZ, -1, 3) );
   assert( dfm2::CheckNumpyArray2D(npXYZ0, -1, 3) );
-  assert( dfm2::CheckNumpyArray2D(npTri, -1, 3) );
   assert( dfm2::CheckNumpyArray2D(npRigWeight, -1, 4) );
   assert( dfm2::CheckNumpyArray2D(npRigJoint, -1, 4) );
   assert( npXYZ.shape()[0] == npXYZ0.shape()[0] );
@@ -92,11 +106,25 @@ void PyUpdateRigSkin(
   assert( npXYZ.shape()[0] == npRigJoint.shape()[0] );
   dfm2::Skinning_LBS_LocalWeight(npXYZ.mutable_data(),
                                  npXYZ0.data(), npXYZ0.shape()[0],
-                                 npTri.data(), npTri.shape()[0],
-                                 BA.aRigBone,
+                                 skeleton.aRigBone,
                                  npRigWeight.data(),
                                  npRigJoint.data());
 }
+
+std::tuple< py::array_t<double>,py::array_t<unsigned int> >
+PySparsifyMatrixRow(
+    const py::array_t<double>& A)
+{
+  std::vector<double> aSparseA;
+  std::vector<unsigned int> aSparseI;
+  const int nrow = A.shape()[0];
+  dfm2::SparsifyMatrixRow(aSparseA,aSparseI,A.data(),nrow,A.shape()[1],1.0e-4);
+  const int nelm_par_row = aSparseA.size()/nrow;
+  py::array_t<unsigned int> npSparseI({nrow,nelm_par_row}, aSparseI.data());
+  py::array_t<double> npSparseA({nrow,nelm_par_row}, aSparseA.data());
+  return std::make_tuple(npSparseA,npSparseI);
+}
+
 
 // Rigging related ends here
 // -----------------------------------------
@@ -108,14 +136,18 @@ void init_rigging(py::module &m){
       .def("read", &dfm2::CGLTF::Read)
       .def("print", &dfm2::CGLTF::Print);
 
-  py::class_<CBoneArray>(m,"CppBoneArray")
-      .def("set_translation", &CBoneArray::SetTranslation)
-      .def("set_rotation_bryant", &CBoneArray::SetRotationBryant)
+  // I defined the array as a class because pybind11 cannot use call by reference for list.
+  py::class_<CSkeleton>(m,"CppSkeleton")
+      .def("set_translation", &CSkeleton::SetTranslation)
+      .def("set_rotation_bryant", &CSkeleton::SetRotationBryant)
       .def(py::init<>());
 
   m.def("cppGetMeshInfoGltf", &PyGLTF_GetMeshInfo);
-  m.def("cppGetBonesGltf", &PyGLTF_GetBones);
+  m.def("cppGetSkeleton_Gltf", &PySkeleton_Gltf);
   m.def("cppUpdateRigSkin", &PyUpdateRigSkin);
   m.def("cppUpdateBoneRotTransl", &dfm2::UpdateBoneRotTrans);
+  m.def("cppGetSkeleton_BoneTreePos",&PyGetSkeleton_BoneTreePos);
+  m.def("cppSparsifyMatrixRow",&PySparsifyMatrixRow);
+
 
 }

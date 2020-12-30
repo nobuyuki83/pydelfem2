@@ -8,10 +8,10 @@
 import matplotlib.pyplot as plt
 
 import PyDelFEM2 as dfm2
-import PyDelFEM2.gl._glfw
+import PyDelFEM2.gl.glfw
 
 msh = dfm2.Mesh()
 msh.read("../test_inputs/bunny_2k.ply")
-img = dfm2.gl._glfw.imgDraw3d([msh],winsize=(400,300))
+img = dfm2.gl.glfw.imgDraw3d([msh],winsize=(400,300))
 plt.imshow(img)
 plt.show()

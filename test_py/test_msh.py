@@ -139,11 +139,11 @@ class Test_GlTF():
     if request.config.getoption('--is_gl') == "true":                      
       dfm2.gl.glfw.winDraw3d([msh], winsize=(400, 300), nframe=10)
 
-    bone_array = dfm2.cppGetBonesGltf(gltf, 0)
+    bone_array = dfm2.cppGetSkeleton_Gltf(gltf, 0)
     bone_array.set_rotation_bryant(0, [-3.1415 * 0.5, 0.0, 0.0])
     bone_array.set_translation(0, [0.0, 0.0, +0.2])
     dfm2.cppUpdateRigSkin(np_pos,
-                         np_pos0, np_elm, bone_array, np_rigw, np_rigj)
+                          np_pos0, bone_array, np_rigw, np_rigj)
     msh = dfm2.Mesh(np_pos, np_elm, dfm2.TRI)
     axis = dfm2.gl.AxisXYZ(1)
     if request.config.getoption('--is_gl') == "true":                  

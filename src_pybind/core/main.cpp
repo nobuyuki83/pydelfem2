@@ -14,7 +14,8 @@
 #include "delfem2/cad2_dtri2.h"
 #include "delfem2/mat3.h"
 #include "delfem2/gridvoxel.h"
-#include "delfem2/bv.h"
+#include "delfem2/srchbv3sphere.h"
+#include "delfem2/srchbv3aabb.h"
 #include "delfem2/slice.h"
 #include "delfem2/evalmathexp.h"
 

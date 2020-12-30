@@ -6,7 +6,7 @@
 #include <deque>
 #include "delfem2/dtri2_v2dtri.h"
 #include "delfem2/dtri3_v3dtri.h"
-#include "delfem2/mshtopo.h"
+#include "delfem2/mshuni.h"
 
 // -------------------------
 #include "glad/glad.h"
@@ -15,14 +15,15 @@
 #else
 #include <GL/gl.h>
 #endif
-#include "delfem2/opengl/gl_funcs.h"
-#include "delfem2/opengl/funcs_glold.h"
-#include "delfem2/opengl/color_glold.h"
-#include "delfem2/opengl/cad2dtriv2_glold.h"
-#include "delfem2/opengl/caddtri_v3_glold.h"
-#include "delfem2/opengl/v2_glold.h"
-#include "delfem2/opengl/v3q_glold.h"
-#include "delfem2/opengl/gridcube_glold.h"
+#include "delfem2/opengl/funcs.h"
+#include "delfem2/opengl/old/mshuni.h"
+#include "delfem2/opengl/old/funcs.h"
+#include "delfem2/opengl/old/color.h"
+#include "delfem2/opengl/old/cad2dtriv2.h"
+#include "delfem2/opengl/old/caddtri_v3.h"
+#include "delfem2/opengl/old/v2.h"
+#include "delfem2/opengl/old/v3q.h"
+#include "delfem2/opengl/old/gridcube.h"
 
 namespace py = pybind11;
 namespace dfm2 = delfem2;

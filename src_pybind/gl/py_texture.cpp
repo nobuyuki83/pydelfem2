@@ -4,7 +4,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 
-#include "delfem2/opengl/tex_gl.h"
+#include "delfem2/opengl/tex.h"
 
 namespace py = pybind11;
 namespace dfm2 = delfem2;

@@ -11,6 +11,8 @@
 #include "../py_funcs.h"
 
 #include "delfem2/mshtopoio.h"
+#include "delfem2/jagarray.h"
+
 
 namespace py = pybind11;
 namespace dfm2 = delfem2;

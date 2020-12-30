@@ -14,11 +14,12 @@ from .c_core import cad_getPointsEdge, cppMvc
 from .c_core import CppMeshDynTri3D, CppCad2D
 
 from .c_core import \
-  CppGLTF, \
-  cppGetMeshInfoGltf, \
-  cppGetBonesGltf, \
-  cppUpdateRigSkin, \
-  cppUpdateBoneRotTransl
+  CppGLTF,\
+  cppGetMeshInfoGltf,\
+  cppGetSkeleton_Gltf,\
+  cppGetSkeleton_BoneTreePos,\
+  cppUpdateRigSkin,\
+  cppSparsifyMatrixRow
 
 # jarray
 from .c_core import \

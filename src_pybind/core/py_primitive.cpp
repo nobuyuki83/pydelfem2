@@ -10,7 +10,7 @@
 #include <pybind11/numpy.h>
 
 #include "delfem2/mshtopoio.h" // for GeodesicPolygon
-#include "delfem2/primitive.h"
+#include "delfem2/mshprimitive.h"
 
 namespace py = pybind11;
 namespace dfm2 = delfem2;
